@@ -17,7 +17,7 @@
 # Games are randomly pulled from all MRAs or a user-provided list
 
 
-## Credits
+# ======== Credits ========
 # Original concept and implementation by: mrchrisster
 # Additional development by: Mellified
 # And thanks to kaloun34 & woelper for contributing!
@@ -27,12 +27,15 @@
 ## Default Variables
 cores=All
 timer=120
-pathfs="/media/fat"
+pathfs=/media/fat
+mbcpath=/tmp/mbc
+partunpath=/tmp/partun
+
 
 # ========= ARCADE OPTIONS =========
-mralist="/tmp/.Attract_Mode"
-mrapath="${pathfs}/_Arcade"
-mrapathvert="${pathfs}/_Arcade/_Organized/_6 Rotation/_Vertical CW 90 Deg" 
+mralist=/tmp/.Attract_Mode
+mrapath=${pathfs}/_Arcade
+mrapathvert="${pathfs}/_Arcade/_Organized/_6 Rotation/_Vertical CW 90 Deg"
 mrapathhoriz="${pathfs}/_Arcade/_Organized/_6 Rotation/_Horizontal"
 orientation=All
 
@@ -64,18 +67,18 @@ parse_ini()
 	
 	# Setup corelist
 	if [ "${cores}" == "All" ]; then
-		corelist=next_core_snes next_core_genesis next_core_tgfx16cd next_core_arcade
+		corelist="snes genesis tgfx16cd arcade"
 	elif [ "${cores}" == "Arcade" ]; then
-		corelist=next_core_arcade
+		corelist="arcade"
 	fi
 }
 
 mister_clean()
 {
-			# echo "Restarting MiSTer Menu core, helps with keeping things working"
-			killall MiSTer > /dev/null 2> /dev/null || :
-			/media/fat/MiSTer > /dev/null 2>&1 &
-			disown
+	# echo "Restarting MiSTer Menu core, helps with keeping things working"
+	killall MiSTer > /dev/null 2> /dev/null || :
+	/media/fat/MiSTer > /dev/null 2>&1 &
+	disown
 }
 
 parse_cmdline()
@@ -101,6 +104,34 @@ there_can_be_only_one()
 	fi
 	# Save our PID
 	echo "$(pidof $(basename ${1}))" > /var/run/attract.pid
+}
+
+loop_core()
+{
+	next_core
+	sleep ${timer}
+}
+
+next_core()
+{
+	next=$(echo ${corelist}| xargs shuf -n1 -e)
+	next_core_${next} ${1}
+}
+
+
+# Restart MiSTer Menu core every time (bug in MiSTer menu core)
+loop_core_reset()
+{
+	while [ 1 ]; do
+		next=$(echo ${corelist}| xargs shuf -n1 -e)
+		${next}
+		sleep ${timer}
+		((count++))
+		if [ "${count}" == "1" ]; then
+			mister_clean
+			count=1
+		fi
+	done
 }
 
 
@@ -136,7 +167,7 @@ get_mbc()
 	esac
 	set -e
 
-	if [ ! -f "$pathfs"/linux/mbc ] ; then
+	if [ ! -f "${mbcpath}" ] ; then
 		REPOSITORY_URL="https://github.com/mrchrisster/MiSTer_Batch_Control"
 		echo "Downloading mbc - a tool needed for launching roms"
 		echo "Created for MiSTer by Pocomane"
@@ -148,8 +179,10 @@ get_mbc()
 			${SSL_SECURITY_OPTION} \
 			--fail \
 			--location \
-			-o $pathfs/linux/mbc \
+			-o "${mbcpath}" \
 			"${REPOSITORY_URL}/blob/feature-rom-mount/mbc?raw=true"
+			chmod +x "${mbcpath}"
+
 	else
 		echo "Mister Batch Control is installed, continuing..."
 	fi
@@ -197,8 +230,9 @@ get_partun()
 			${SSL_SECURITY_OPTION} \
 			--fail \
 			--location \
-			-o $pathfs/linux/partun \
-			"${REPOSITORY_URL}/releases/download/0.1.1/partun_armv7"
+			-o "${partunpath}" \
+			"${REPOSITORY_URL}/releases/download/0.1.5/partun_armv7"
+			chmod +x "${partunpath}"
 }
 
 
@@ -244,7 +278,7 @@ next_core_arcade()
 		exit 1
 	fi
 
-	echo "You'll be playing on Arcade:"
+	echo "Next up at the arcade:"
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
 
@@ -280,12 +314,12 @@ next_core_snes()
 		snesrom="$(find /media/fat/games/snes -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
 	else 
 		#echo "Need to use partun for unpacking random roms"
-		if [ -f "$pathfs"/linux/partun ] ; then
+		if [ -f "${partunpath}" ]; then
 			#echo "Partun installed. Launching now"
-			snesrom=$($pathfs/linux/partun "$(ls $pathfs/games/snes/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename $pathfs/games/snes/snestmp.sfc)
+			snesrom=$("${partunpath}" "$(ls $pathfs/games/snes/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename $pathfs/games/snes/snestmp.sfc)
 		else
 			get_partun
-			snesrom=$($pathfs/linux/partun "$(ls $pathfs/games/snes/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename $pathfs/games/snes/snestmp.sfc)
+			snesrom=$("${partunpath}" "$(ls $pathfs/games/snes/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename $pathfs/games/snes/snestmp.sfc)
 		fi
 	fi
 
@@ -296,7 +330,7 @@ next_core_snes()
 	fi
 	
 
-	echo "You'll be playing on SNES: (currently only shows rom name when archive is unzipped)"
+	echo "Next up on the Super Nintendo Entertainment System:"
 	echo -e "\e[1m $(echo $(basename "${snesrom}") | sed -e 's/\.[^.]*$//') \e[0m"
 
 	if [ "${1}" == "countdown" ]; then
@@ -307,13 +341,13 @@ next_core_snes()
 		done
 	fi
 
-  if [ -f "$pathfs"/linux/mbc ] ; then
+  if [ -f "${mbcpath}" ] ; then
 	
-	$pathfs/linux/mbc load_rom SNES "$snesrom" > /dev/null 2>&1
+	"${mbcpath}" load_rom SNES "$snesrom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	$pathfs/linux/mbc load_rom SNES "$snesrom" > /dev/null 2>&1
+	"${mbcpath}" load_rom SNES "$snesrom" > /dev/null 2>&1
   fi
 }
 
@@ -328,12 +362,12 @@ next_core_genesis()
 		genesisrom="$(find /media/fat/games/genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
 	else 
 		#echo "Need to use partun for unpacking random roms"
-		if [ -f "$pathfs"/linux/partun ] ; then
+		if [ -f ${partunpath} ] ; then
 			#echo "Partun installed. Launching now"
-			genesisrom=$($pathfs/linux/partun "$(ls $pathfs/games/genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename $pathfs/games/genesis/genesistmp.md)
+			genesisrom=$(${partunpath} "$(ls $pathfs/games/genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename $pathfs/games/genesis/genesistmp.md)
 		else
 			get_partun
-			genesisrom=$($pathfs/linux/partun "$(ls $pathfs/games/genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename $pathfs/games/genesis/genesistmp.md)
+			genesisrom=$(${partunpath} "$(ls $pathfs/games/genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename $pathfs/games/genesis/genesistmp.md)
 		fi
 
 	fi
@@ -345,7 +379,7 @@ next_core_genesis()
 	fi
 	
 
-	echo "You'll be playing on Genesis: (currently only shows rom name when archive is unzipped)"
+	echo "Next up on the Sega Genesis:"
 	echo -e "\e[1m $(echo $(basename "${genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
 
 
@@ -359,13 +393,13 @@ next_core_genesis()
 
 
   # Tell MiSTer to load the next Genesis ROM
-  if [ -f "$pathfs"/linux/mbc ] ; then
+  if [ -f "${mbcpath}" ] ; then
 	#echo "MBC installed. Launching now"
-	$pathfs/linux/mbc load_rom GENESIS "$genesisrom" > /dev/null 2>&1
+	"${mbcpath}" load_rom GENESIS "$genesisrom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	$pathfs/linux/mbc load_rom GENESIS "$genesisrom" > /dev/null 2>&1		
+	"${mbcpath}" load_rom GENESIS "$genesisrom" > /dev/null 2>&1		
   fi
 }
 
@@ -393,7 +427,7 @@ next_core_tgfx16cd()
 	fi
 	
 
-	echo "You'll be playing on PC Engine CD"
+	echo "Next up on the TurboGrafx-16 CD - AKA PC Engine CD:"
 	echo -e "\e[1m $(echo $(basename "${tgfx16cdrom}") | sed -e 's/\.[^.]*$//') \e[0m"
 
 
@@ -406,43 +440,15 @@ next_core_tgfx16cd()
 	fi
 
   # Tell MiSTer to load the next Genesis ROM
-  if [ -f "$pathfs"/linux/mbc ] ; then
-	#echo "MBC installed. Launching now"
-	$pathfs/linux/mbc load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1
-	
+  if [ -f "${mbcpath}" ] ; then
+		#echo "MBC installed. Launching now"
+		"${mbcpath}" load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1
   else
-	get_mbc
-	$pathfs/linux/mbc load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1		
+		get_mbc
+		"${mbcpath}" load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1
   fi
 }
 
-
-# ========= GENERAL PREP =========
-# Restart MiSTer Menu core every time (bug in MiSTer menu core)
-loop_core_reset()
-{
-	while [ 1 ]; do
-		next=$(echo ${corelist}| xargs shuf -n1 -e)
-		${next}
-		sleep ${timer}
-		((count++))
-		if [ "${count}" == "1" ]; then
-			mister_clean
-			count=1
-		fi
-	done
-}
-
-loop_core()
-{
-	sleep ${timer}
-}
-
-next_core()
-{
-	next=$(echo ${corelist}| xargs shuf -n1 -e)
-	${next}
-}
 
 # ========= GENERAL EXECUTION =========
 echo "Starting up, please wait a moment"
