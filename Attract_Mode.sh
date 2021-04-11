@@ -20,7 +20,7 @@
 ## Credits
 # Original concept and implementation by: mrchrisster
 # Additional development by: Mellified
-# And thanks to kaloun34 for contributing!
+# And thanks to kaloun34 & woelper for contributing!
 # https://github.com/mrchrisster/mister-arcade-attract/
 
 
@@ -148,7 +148,7 @@ mister_clean()
 
 			REPOSITORY_URL="https://github.com/woelper/partun"
 			echo "Downloading partun - needed for unzipping roms from big archives."
-			echo "Created for MiSTer by Johann Woelper"
+			echo "Created for MiSTer by woelper"
 			echo "${REPOSITORY_URL}"
 			echo ""
 
