@@ -12,7 +12,7 @@ For Console cores make sure you are using the recommended folder structure, eg /
 The script supports zipped Everdrive packs or unzipped folders  
 For MegaCD and Turbografx16 CD your games need to be in CHD format
 
-/media/usb is currently not supported due to NTFS being case-sensitive - should be an easy fix but requires some testing
+/media/usb is currently untested and might casue issues due to NTFS being case-sensitive on MiSTer
 
 ## Horizontal or Vertical Only
 For a list of only horizontal or vertical Arcade Games, change the "orientation" setting in the Attract_Mode.ini file
