@@ -6,7 +6,6 @@ This script starts a random game from your collection (currently Arcade, SNES, G
 
 # Usage
 To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mode.ini to /media/fat/Scripts Directory.  
-Attract_Mode.ini is needed in order to use the script.
 
 # Some notes about cores
 Arcade core will work on most systems out of the box while console cores are a bit more tricky to get working.
