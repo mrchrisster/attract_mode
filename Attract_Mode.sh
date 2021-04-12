@@ -25,10 +25,9 @@
 
 
 ## Default Variables, change in ini
-cores="snes,genesis,tgfx16cd,arcade,megacd"
+corelist="snes,genesis,tgfx16cd,arcade,megacd"
 timer=120
 pathfs=/media/fat
-
 
 # Path to tools. If you don't want the script to download the tools every time, 
 # you can change the Path to ${pathfs}/linux for example
@@ -43,7 +42,6 @@ mrapath=${pathfs}/_Arcade
 mrapathvert="${pathfs}/_Arcade/_Organized/_6 Rotation/_Vertical CW 90 Deg"
 mrapathhoriz="${pathfs}/_Arcade/_Organized/_6 Rotation/_Horizontal"
 orientation=All
-
 
 
 ## Basic Functions
@@ -65,16 +63,37 @@ parse_ini()
 		mrapath="${mrapathvert}"
 	elif [ "${orientation}" == "Horizontal" ]; then
 		mrapath="${mrapathhoriz}"
-	fi
-	
-	# Setup corelist
-	corelist="$(echo $cores | tr ',' ' ')"
+	fi	
 }
 
 
 parse_cmdline()
 {
 	case "${1}" in
+		snes)
+			echo "Super Nintendo Entertainment System selected!"
+			declare -g corelist="snes"
+			;;
+		genesis)
+			echo "Sega Genesis selected!"
+			declare -g corelist="genesis"
+			;;
+		tgfx16cd)
+			echo "TurboGrafx-16 CD selected!"
+			declare -g corelist="tgfx16cd"
+			;;
+		megacd)
+			echo "Sega MegaCD selected!"
+			declare -g corelist="megacd"
+			;;
+		arcade)
+			echo "MiSTer Arcade selected!"
+			declare -g corelist="arcade"
+			;;
+		neogeo)
+			echo "SNK NeoGeo selected!"
+			declare -g corelist="neogeo"
+			;;
 		lucky) # Load one random core and exit with pause
 			get_lucky
 			exit 0
