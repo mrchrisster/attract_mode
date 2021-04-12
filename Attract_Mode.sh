@@ -108,8 +108,10 @@ there_can_be_only_one()
 
 loop_core()
 {
-	next_core
-	sleep ${timer}
+	while :; do
+		next_core
+		sleep ${timer}
+	done
 }
 
 next_core()
