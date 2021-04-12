@@ -4,10 +4,10 @@
   
 This script starts a random game from your collection (currently Arcade, SNES, Genesis, Neo Geo, Mega CD and PC Engine CD) every 2 minutes on your MiSTer FPGA device.  The script is highly customizable through the supplied ini file (see options below). You can play the game that is being displayed, but it will automatically switch to a new game after 2 mins. Unfortunately we don't have control over user inputs yet, so at this point it's really not meant for interaction, just for show. It's also easy to turn the Attract Mode off: When you're done, perform a *cold reboot* of your MiSTer from the OSD (F12) menu - or use the power button!
 
-# Usage
+## Usage
 To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mode.ini to /media/fat/Scripts Directory.  
 
-# How it works
+## How it works
 Some MiSTer cores like Arcade cores, can be launched from the command line which this script automates. For console games there is no way of loading individual games through the shell at the moment so we need to automate the process by sending button pushes to the MiSTer. This is handled by [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
 
 ## Some notes about cores
