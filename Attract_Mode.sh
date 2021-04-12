@@ -273,7 +273,7 @@ next_core_arcade()
 	# If the MRA is still not valid something is wrong - suicide
 	if [ ! -f "${mrapath}/${mra}" ]; then
 		echo "There is no valid file at ${mrapath}/${mra}!"
-		exit 1
+		loop_core
 	fi
 
 	echo "Next up at the arcade:"
@@ -324,7 +324,7 @@ next_core_snes()
 
 	if [ -z "$snesrom" ]; then
 		echo "Something went wrong. There is no valid file in snesrom variable."
-		exit 1
+		loop_core
 	fi
 	
 
@@ -373,7 +373,7 @@ next_core_genesis()
 
 	if [ -z "$genesisrom" ]; then
 		echo "Something went wrong. There is no valid file in genesisrom variable."
-		exit 1
+		loop_core
 	fi
 	
 
@@ -421,7 +421,7 @@ next_core_tgfx16cd()
 
 	if [ -z "$tgfx16cdrom" ]; then
 		echo "Something went wrong. There is no valid file in tgfx16cdrom variable."
-		exit 1
+		loop_core
 	fi
 	
 
