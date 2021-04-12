@@ -72,40 +72,46 @@ parse_ini()
 
 parse_cmdline()
 {
-	case "${1}" in
-		snes)
-			echo "Super Nintendo Entertainment System selected!"
-			declare -g corelist="snes"
-			;;
-		genesis)
-			echo "Sega Genesis selected!"
-			declare -g corelist="genesis"
-			;;
-		tgfx16cd)
-			echo "TurboGrafx-16 CD selected!"
-			declare -g corelist="tgfx16cd"
-			;;
-		megacd)
-			echo "Sega MegaCD selected!"
-			declare -g corelist="megacd"
-			;;
-		arcade)
-			echo "MiSTer Arcade selected!"
-			declare -g corelist="arcade"
-			;;
-		neogeo)
-			echo "SNK NeoGeo selected!"
-			declare -g corelist="neogeo"
-			;;
-		lucky) # Load one random core and exit with pause
-			get_lucky
-			exit 0
-			;;
-		next) # Load one random core and exit
-			next_core
-			exit 0
-			;;
-	esac
+	for argument in "${@}"; do
+		case ${argument} in
+			snes)
+				echo "Super Nintendo Entertainment System selected!"
+				declare -g corelist="snes"
+				;;
+			genesis)
+				echo "Sega Genesis selected!"
+				declare -g corelist="genesis"
+				;;
+			tgfx16cd)
+				echo "TurboGrafx-16 CD selected!"
+				declare -g corelist="tgfx16cd"
+				;;
+			megacd)
+				echo "Sega MegaCD selected!"
+				declare -g corelist="megacd"
+				;;
+			arcade)
+				echo "MiSTer Arcade selected!"
+				declare -g corelist="arcade"
+				;;
+			neogeo)
+				echo "SNK NeoGeo selected!"
+				declare -g corelist="neogeo"
+				;;
+			lucky) # Load one random core and exit with pause
+				gonext="get_lucky"
+				;;
+			next) # Load one random core and exit
+				gonext="next_core"
+				;;
+		esac
+	done
+
+	# If we need to go somewhere special next do it here
+	if [ ! -z "${gonext}" ]; then
+		${gonext}
+		exit 0
+	fi
 }
 
 there_can_be_only_one()
@@ -288,7 +294,7 @@ next_core_arcade()
 	echo "Next up at the Arcade:"
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
-
+	
 	if [ "${1}" == "countdown" ]; then
 		echo "Loading quarters in..."
 		for i in {5..1}; do
@@ -549,7 +555,7 @@ next_core_megacd()
 echo "Starting up, please wait a moment"
 parse_ini
 build_mralist
-parse_cmdline ${1}
+parse_cmdline ${@}
 there_can_be_only_one ${0}
 
 # Let Mortal Kombat begin!
