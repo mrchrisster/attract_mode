@@ -10,7 +10,7 @@ To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mo
 # How it works
 Some MiSTer cores like Arcade cores, can be launched from the command line which this script automates. For console games there is no way of loading individual games through the shell at the moment so we need to automate the process by sending button pushes to the MiSTer. This is handled by [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
 
-# Some notes about cores
+## Some notes about cores
 Arcade core will work on most systems out of the box while console cores are a bit more tricky to get working.
 
 For Console cores make sure you are using the recommended folder structure, eg /media/fat/Games/SNES/  
