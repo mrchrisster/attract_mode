@@ -63,7 +63,10 @@ parse_ini()
 		mrapath="${mrapathvert}"
 	elif [ "${orientation}" == "Horizontal" ]; then
 		mrapath="${mrapathhoriz}"
-	fi	
+	fi
+	
+	# Setup corelist
+	corelist="$(echo ${corelist} | tr ',' ' ')"
 }
 
 
