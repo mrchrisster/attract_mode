@@ -1,7 +1,7 @@
 # Mister Attract Mode
-<break>
-** Have your MiSTer running in the background and enjoy the beautiful pixel art of random games from your library!**  
-<break>
+  
+**Have your MiSTer running in the background and enjoy the beautiful pixel art of random games from your library!**  
+  
 This script starts a random game from your collection (currently Arcade, SNES, Genesis, Neo Geo, Mega CD and PC Engine CD) every 2 minutes on your MiSTer FPGA device.  The script is highly customizable through the supplied ini file (see options below). You can play the game that is being displayed, but it will automatically switch to a new game after 2 mins. Unfortunately we don't have control over user inputs yet, so at this point it's really not meant for interaction, just for show. It's also easy to turn the Attract Mode off: When you're done, perform a *cold reboot* of your MiSTer from the OSD (F12) menu - or use the power button!
 
 # Usage
