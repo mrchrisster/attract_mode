@@ -15,3 +15,6 @@ Make sure you have your Arcade roms setup correctly. [Update-all](https://github
 
 # Feeling Lucky?
 Included is FeelLucky_Arcade.sh, which is a fun way to explore your MiSTer arcade library. The script loads a single random arcade game. Play and enjoy!
+
+# Mister Bug
+Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Only physically turning the Mister off fixes this atm.
