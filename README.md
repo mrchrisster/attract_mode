@@ -5,6 +5,15 @@ This script starts a random game from your collection (currently Arcade, SNES, G
 To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mode.ini to /media/fat/Scripts Directory.
 Attract_Mode.ini is needed in order to use the script.
 
+# Some notes about cores
+Arcade core will work on most systems out of the box while console cores are a bit more tricky to get working.
+
+For Console cores make sure you are using the recommended folder structure, eg /media/fat/Games/SNES/
+The script supports zipped Everdrive packs or unzipped folders
+For MegaCD and Turbografx16 CD your games need to be in CHD format
+
+/media/usb is currently not supported due to NTFS being case-sensitive - should be an easy fix but requires some testing
+
 ## Horizontal or Vertical Only
 For a list of only horizontal or vertical Arcade Games, change the "orientation" setting in the Attract_Mode.ini file
 
