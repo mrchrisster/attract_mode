@@ -66,11 +66,7 @@ parse_ini()
 	fi
 	
 	# Setup corelist
-	if [ "${cores}" == "All" ]; then
-		corelist="snes genesis tgfx16cd arcade"
-	elif [ "${cores}" == "Arcade" ]; then
-		corelist="arcade"
-	fi
+	corelist="$(echo $cores | tr ',' ' ')"
 }
 
 mister_clean()
