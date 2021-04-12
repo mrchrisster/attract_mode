@@ -7,7 +7,7 @@ This script starts a random game from your collection (currently Arcade, SNES, G
 # Usage
 To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mode.ini to /media/fat/Scripts Directory.  
 
-## How it works
+# How it works
 Some MiSTer cores like Arcade cores, can be launched from the command line which this script automates. For console games there is no way of loading individual games through the shell at the moment so we need to automate the process by sending button pushes to the MiSTer. This is handled by [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
 
 # Some notes about cores
@@ -27,8 +27,8 @@ If you want to exclude certain games, add the games to mraexclude in the Attract
 
 Make sure you have your Arcade roms setup correctly. [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works great for that.
 
-# Feeling Lucky?
+## Feeling Lucky?
 Included is FeelLucky_Arcade.sh, which is a fun way to explore your MiSTer arcade library. The script loads a single random arcade game. Play and enjoy!
 
-# Mister Bug
+## Mister Bug
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Only physically turning the Mister off fixes this atm.
