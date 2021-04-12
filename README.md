@@ -8,7 +8,7 @@ Attract_Mode.ini is needed in order to use the script.
 # Some notes about cores
 Arcade core will work on most systems out of the box while console cores are a bit more tricky to get working.
 
-For Console cores make sure you are using the recommended folder structure, eg /media/fat/Games/SNES/
+For Console cores make sure you are using the recommended folder structure, eg /media/fat/Games/SNES/ \n
 The script supports zipped Everdrive packs or unzipped folders
 For MegaCD and Turbografx16 CD your games need to be in CHD format
 
