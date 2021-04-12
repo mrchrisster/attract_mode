@@ -10,6 +10,13 @@ To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mo
 ## How it works
 Some MiSTer cores like Arcade cores, can be launched from the command line which this script automates. For console games there is no way of loading individual games through the shell at the moment so we need to automate the process by sending button pushes to the MiSTer. This is handled by [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
 
+## Optional features
+Included in /Optional/ are several additional scripts. These use Attract_Mode.sh to run but allow you to cycle games from a single system. 
+
+Also included is Lucky_Mode.sh and core-specific scripts. Lucky mode picks a random game and loads it. Great for exploring your collection!
+
+To use these optional features just copy the script(s) you want into the same location as Attract_mode.sh - by default /media/fat/Scripts/.
+
 ## Some notes about cores
 Arcade core will work on most systems out of the box while console cores are a bit more tricky to get working.
 
@@ -26,9 +33,6 @@ For a list of only horizontal or vertical Arcade Games, change the "orientation"
 If you want to exclude certain games, add the games to mraexclude in the Attract_Mode.ini file
 
 Make sure you have your Arcade roms setup correctly. [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works great for that.
-
-## Feeling Lucky?
-Included is FeelLucky_Arcade.sh, which is a fun way to explore your MiSTer arcade library. The script loads a single random arcade game. Play and enjoy!
 
 ## Mister Bug
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Only physically turning the Mister off fixes this atm.
