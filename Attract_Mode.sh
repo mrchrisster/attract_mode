@@ -325,14 +325,22 @@ next_core_snes()
 	then 
 		#echo "Your rom archive seems to be unzipped" 
 		SNESrom="$(find $pathfs/Games/SNES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
+		echo "Next up on the Super Nintendo Entertainment System:"
+		echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f "${partunpath}" ]; then
 			#echo "Partun installed. Launching now"
 			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
+			echo "Next up on the Super Nintendo Entertainment System:"
+			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			SNESrom=/tmp/SNEStmp.sfc
 		else
 			get_partun
 			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
+			echo "Next up on the Super Nintendo Entertainment System:"
+			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			SNESrom=/tmp/SNEStmp.sfc
 		fi
 	fi
 
@@ -343,8 +351,7 @@ next_core_snes()
 	fi
 	
 
-	echo "Next up on the Super Nintendo Entertainment System:"
-	echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+
 
 	if [ "${1}" == "countdown" ]; then
 		echo "Loading in..."
@@ -356,11 +363,11 @@ next_core_snes()
 
   if [ -f "${mbcpath}" ] ; then
 	
-	"${mbcpath}" load_rom SNES /tmp/SNEStmp.sfc > /dev/null 2>&1
+	"${mbcpath}" load_rom SNES "$SNESrom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	"${mbcpath}" load_rom SNES /tmp/SNEStmp.sfc > /dev/null 2>&1
+	"${mbcpath}" load_rom SNES "$SNESrom" > /dev/null 2>&1
   fi
 }
 
@@ -373,14 +380,22 @@ next_core_genesis()
 	then 
 		#echo "Your rom archive seems to be unzipped" 
 		Genesisrom="$(find $pathfs/Games/Genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
+		echo "Next up on the Sega Genesis:"
+		echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f ${partunpath} ] ; then
 			#echo "Partun installed. Launching now"
 			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
+			echo "Next up on the Sega Genesis:"
+			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			Genesisrom=/tmp/Genesistmp.md
 		else
 			get_partun
 			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
+			echo "Next up on the Sega Genesis:"
+			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			Genesisrom=/tmp/Genesistmp.md
 		fi
 
 	fi
@@ -392,8 +407,7 @@ next_core_genesis()
 	fi
 	
 
-	echo "Next up on the Sega Genesis:"
-	echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -408,11 +422,11 @@ next_core_genesis()
   # Tell MiSTer to load the next Genesis ROM
   if [ -f "${mbcpath}" ] ; then
 	#echo "MBC installed. Launching now"
-	"${mbcpath}" load_rom GENESIS /tmp/Genesistmp.md > /dev/null 2>&1
+	"${mbcpath}" load_rom GENESIS "$Genesisrom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	"${mbcpath}" load_rom GENESIS /tmp/Genesistmp.md > /dev/null 2>&1		
+	"${mbcpath}" load_rom GENESIS "$Genesisrom" > /dev/null 2>&1		
   fi
 }
 
