@@ -1,6 +1,6 @@
 
 # MiSTer Attract Mode
-**Have your MiSTer running in the background and enjoy the beautiful pixel art and sounds of random games from your library!**
+**Set your MiSTer running to enjoy the beautiful pixel art and sounds of random games from your library - like being at the arcade!**
 
 Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes. This is meant as a show! When you're done just ***cold reboot*** your MiSTer from the OSD (F12) menu - or use the power button.
 
