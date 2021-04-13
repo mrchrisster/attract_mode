@@ -10,7 +10,7 @@ To cycle through supported all MiSTer cores, copy Attract_Mode.sh and Attract_Mo
 The [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works great for putting your files in the right places.
 
 ### USB Storage
-/media/usb is may casue issues due to NTFS being case-sensitive on MiSTer.
+/media/usb may cause issues due to NTFS being case-sensitive on MiSTer.
 
 ### Console Cores
 Make sure you are using the recommended folder structure, eg /media/fat/Games/SNES/  
