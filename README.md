@@ -23,7 +23,7 @@ The [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works g
 /media/usb may cause issues due to NTFS being case-sensitive on MiSTer.
 
 ### Console Cores
-Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must to be in CHD format.
+Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.
 
 ## Attract Mode Configuration
 ### Optional features
