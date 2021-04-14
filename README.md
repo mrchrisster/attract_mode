@@ -55,7 +55,7 @@ Still investigating why this is happening
 Make sure you use a bios that auto launches the game  
 
 **- Can I use a CIFS mount for my games?**  
-Yes, we support CIFS!
+CIFS is supported.
 Here is an example of some values in `cifs_mount.sh` that should get you started:  
 ```
 SERVER="192.168.1.10"  
