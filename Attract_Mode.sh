@@ -99,9 +99,11 @@ parse_cmdline()
 				declare -g corelist="neogeo"
 				;;
 			lucky) # Load one random core and exit with pause
+				echo "Lucky Mode Activated!"
 				gonext="get_lucky"
 				;;
 			next) # Load one random core and exit
+				echo "Next Mode Activated!"
 				gonext="next_core"
 				;;
 		esac
