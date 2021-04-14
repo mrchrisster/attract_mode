@@ -90,6 +90,10 @@ parse_cmdline()
 				echo "Sega MegaCD selected!"
 				declare -g corelist="megacd"
 				;;
+			tgfx16)
+				echo "TurboGRAFX16 selected!"
+				declare -g corelist="tgfx16"
+				;;
 			arcade)
 				echo "MiSTer Arcade selected!"
 				declare -g corelist="arcade"
@@ -99,11 +103,9 @@ parse_cmdline()
 				declare -g corelist="neogeo"
 				;;
 			lucky) # Load one random core and exit with pause
-				echo "Lucky Mode Activated!"
 				gonext="get_lucky"
 				;;
 			next) # Load one random core and exit
-				echo "Next Mode Activated!"
 				gonext="next_core"
 				;;
 		esac
@@ -296,7 +298,6 @@ next_core_arcade()
 	echo "Next up at the Arcade:"
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
-	echo "$(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') (Arcade)" > /tmp/Attract_Game.txt
 	
 	if [ "${1}" == "countdown" ]; then
 		echo "Loading quarters in..."
@@ -328,24 +329,16 @@ next_core_snes()
 	then 
 		#echo "Your rom archive seems to be unzipped" 
 		SNESrom="$(find $pathfs/Games/SNES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
-		echo "Next up on the Super Nintendo Entertainment System:"
-		echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-		echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
+		SNESsh="${SNESrom}"
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f "${partunpath}" ]; then
 			#echo "Partun installed. Launching now"
-			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
-			echo "Next up on the Super Nintendo Entertainment System:"
-			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-			echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
+			SNESsh=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			SNESrom=/tmp/SNEStmp.sfc
 		else
 			get_partun
-			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
-			echo "Next up on the Super Nintendo Entertainment System:"
-			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-			echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
+			SNESsh=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			SNESrom=/tmp/SNEStmp.sfc
 		fi
 	fi
@@ -356,7 +349,8 @@ next_core_snes()
 		loop_core
 	fi
 	
-
+	echo "Next up on the Super Nintendo Entertainment System:"
+	echo -e "\e[1m $(echo $(basename "${SNESsh}") | sed -e 's/\.[^.]*$//') \e[0m"
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -386,24 +380,16 @@ next_core_genesis()
 	then 
 		#echo "Your rom archive seems to be unzipped" 
 		Genesisrom="$(find $pathfs/Games/Genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
-		echo "Next up on the Sega Genesis:"
-		echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-		echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
+		Genesissh="${Genesisrom}"
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f ${partunpath} ] ; then
 			#echo "Partun installed. Launching now"
-			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
-			echo "Next up on the Sega Genesis:"
-			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-			echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
+			Genesissh=$(${partunpath} "$(ls $pathfs/Games/Genesis/\*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			Genesisrom=/tmp/Genesistmp.md
 		else
 			get_partun
-			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
-			echo "Next up on the Sega Genesis:"
-			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-			echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
+			Genesissh=$(${partunpath} "$(ls $pathfs/Games/Genesis/\*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			Genesisrom=/tmp/Genesistmp.md
 		fi
 
@@ -415,7 +401,8 @@ next_core_genesis()
 		loop_core
 	fi
 	
-
+	echo "Next up on the Sega Genesis:"
+	echo -e "\e[1m $(echo $(basename "${Genesissh}") | sed -e 's/\.[^.]*$//') \e[0m"
 
 
 
@@ -439,6 +426,61 @@ next_core_genesis()
   fi
 }
 
+# ========= TGFX16 MODE =========
+next_core_tgfx16()
+{
+	# Check if roms are zipped
+	if [ -z "$(find $pathfs/Games/TGFX16 -maxdepth 1 -type f \( -iname "*.zip" \))" ] 
+	then 
+		#echo "Your rom archive seems to be unzipped" 
+		TGFX16rom="$(find $pathfs/Games/TGFX16 -type d \( -name *Eu* -o -name *Bios* -o -name *Music* -o -name *NES2PCE* \) -prune -false -o -name '*.pce' | shuf -n 1)"
+		TGFX16sh="${TGFX16rom}"
+	else 
+		#echo "Need to use partun for unpacking random roms"
+		if [ -f ${partunpath} ] ; then
+			#echo "Partun installed. Launching now"
+			TGFX16sh=$(${partunpath} "$(ls $pathfs/Games/TGFX16/\*.zip | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
+			TGFX16rom=/tmp/TGFX16tmp.pce
+		else
+			get_partun
+			TGFX16sh=$(${partunpath} "$(ls $pathfs/Games/TGFX16/\*.zip | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
+			TGFX16rom=/tmp/TGFX16tmp.pce
+		fi
+
+	fi
+
+
+	if [ -z "$TGFX16rom" ]; then
+		echo "Something went wrong. There is no valid file in tgfx16rom variable."
+		loop_core
+	fi
+	
+	echo "Next up on the TurboGrafx-16 - AKA PC Engine:"
+	echo -e "\e[1m $(echo $(basename "${TGFX16sh}") | sed -e 's/\.[^.]*$//') \e[0m"
+
+
+
+	if [ "${1}" == "countdown" ]; then
+		echo "Loading in..."
+		for i in {5..1}; do
+			echo "${i} seconds"
+			sleep 1
+		done
+	fi
+
+
+  # Tell MiSTer to load the next TGFX16 ROM
+  if [ -f "${mbcpath}" ] ; then
+	#echo "MBC installed. Launching now"
+	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1
+	
+  else
+	get_mbc
+	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1		
+  fi
+}
+
+	
 	
 # ========= TGFX16-CD MODE =========
 next_core_tgfx16cd()
@@ -465,7 +507,6 @@ next_core_tgfx16cd()
 
 	echo "Next up on the TurboGrafx-16 CD - AKA PC Engine CD:"
 	echo -e "\e[1m $(echo $(basename "${tgfx16cdrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-	echo "$(echo $(basename "${tgfx16rom}") | sed -e 's/\.[^.]*$//') (TGFX16CD)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -509,7 +550,6 @@ next_core_neogeo()
 
 	echo "Next up on the NEO GEO:"
 	echo -e "\e[1m $(echo $(basename "${neogeo}") | sed -e 's/\.[^.]*$//') \e[0m"
-	echo "$(echo $(basename "${neogeo}") | sed -e 's/\.[^.]*$//') (NeoGeo)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -555,7 +595,6 @@ next_core_megacd()
 
 	echo "Next up on the Sega Mega CD"
 	echo -e "\e[1m $(echo $(basename "${megacd}") | sed -e 's/\.[^.]*$//') \e[0m"
-	echo "$(echo $(basename "${megacd}") | sed -e 's/\.[^.]*$//') (MegaCD)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
