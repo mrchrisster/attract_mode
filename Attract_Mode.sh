@@ -76,7 +76,7 @@ init_data()
 		["tgfx16cd"]="${pathfs}/games/TGFX16-CD" \
 		)
 	
-	# Core to mbc core name mappings
+	# Can this core use ZIPped ROMs
 	declare -gA CORE_ZIPPED=( \
 		["arcade"]="No" \
 		["gba"]="Yes" \
