@@ -127,15 +127,15 @@ parse_cmdline()
 	fi
 }
 
-there_can_be_only_one()
+there_can_be_only_one() # there_can_be_only_one PID Process
 {
 	# If another attract process is running kill it
 	# This can happen if the script is started multiple times
-	if [ -f /var/run/attract.pid ]; then
-		kill -9 $(cat /var/run/attract.pid) &>/dev/null
+	if [ ! -z "$(pidof -o ${1} $(basename ${2}))" ]; then
+		echo ""
+		echo "Removing other running instances of $(basename ${2})..."
+		kill -9 $(pidof -o ${1} $(basename ${2})) &>/dev/null
 	fi
-	# Save our PID
-	echo "$(pidof $(basename ${1}))" > /var/run/attract.pid
 }
 
 
@@ -480,6 +480,6 @@ get_partun									# Download ZIP tool
 get_mbc											# Download MiSTer control tool
 build_mralist								# Generate list of MRAs
 parse_cmdline ${@}					# Parse command line parameters for input
-#there_can_be_only_one ${0}	# Terminate any other running Attract Mode processes
+there_can_be_only_one "$$" "${0}" # Terminate any other running Attract Mode processes
 loop_core										# Let Mortal Kombat begin!
 exit 1											# We should never exit here, so if we do something is wrong
