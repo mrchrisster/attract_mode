@@ -27,7 +27,7 @@
 
 # ======== DEFAULT VARIABLES ========
 # Change these in the INI file
-corelist="arcade,genesis,megacd,neogeo,nes,snes,tgfx16,tgfx16cd"
+corelist="arcade,gba,genesis,megacd,neogeo,nes,snes,tgfx16,tgfx16cd"
 timer=120
 pathfs=/media/fat
 
@@ -86,6 +86,10 @@ parse_cmdline()
 			genesis)
 				echo "Sega Genesis selected!"
 				declare -g corelist="genesis"
+				;;
+			gba)
+				echo "Gameboy Advance selected!"
+				declare -g corelist="gba"
 				;;
 			megacd)
 				echo "Sega MegaCD selected!"
@@ -332,6 +336,27 @@ next_core_genesis()
 	else # Use ZIP
 		coresh=$("${partunpath}" "$(find ${pathfs}/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 		corerom="/tmp/Genesistmp.md"
+	fi
+
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
+	fi
+}
+
+# ======== Gameboy Advance ========
+next_core_gba()
+{
+	corename="GBA"
+
+	# If not ZIP in game directory OR if ignoring ZIP
+	if [ -z "$(find ${pathfs}/Games/GBA -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
+		corerom="$(find ${pathfs}/Games/GBA -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* \) -prune -false -o -name '*.gba' | shuf -n 1)"
+		coresh="${corerom}"
+	else # Use ZIP
+		coresh=$("${partunpath}" "$(find ${pathfs}/Games/GBA -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/GBAtmp.gba)
+		corerom="/tmp/GBAtmp.gba"
 	fi
 
 	if [ -z "${corerom}" ]; then
