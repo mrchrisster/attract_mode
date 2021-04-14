@@ -56,7 +56,7 @@ Make sure you use a bios that auto launches the game
 
 **- Can I use a CIFS mount for my games?**  
 Yes, we support CIFS!
-Here is an example of `cifs_mount.sh`
+Here is an example of some values in `cifs_mount.sh` that should get you started:  
 ```
 SERVER="192.168.1.10"  
 SHARE="Games/Mister/Games"  
