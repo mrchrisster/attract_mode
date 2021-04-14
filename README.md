@@ -54,4 +54,12 @@ Still investigating why this is happening
 **- Turbografx16 CD just showing Run button but not starting into the game**  
 Make sure you use a bios that auto launches the game  
 
-
+**- Can I use a CIFS mount for my games?**  
+Yes! You have to mount over you games folder and change `Base_Path`
+Here is an example:
+```
+SERVER="192.168.1.10"  
+SHARE="Games/Mister/Games"  
+LOCAL_DIR="*"  
+BASE_PATH="/media/fat/Games" 
+```
