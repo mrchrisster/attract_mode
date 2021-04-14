@@ -51,7 +51,7 @@ Still investigating why this is happening
 **- USB Storage**  
 /media/usb may not work with the script currently due to NTFS being case-sensitive on MiSTer.
 
-**- TURBOGRAFX16 CD just showing Run button but not starting into the game**  
+**- Turbografx16 CD just showing Run button but not starting into the game**  
 Make sure you use a bios that auto launches the game  
 
 
