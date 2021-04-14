@@ -294,6 +294,7 @@ next_core_arcade()
 	echo "Next up at the Arcade:"
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
+	echo "$(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') (Arcade)" > /tmp/Attract_Game.txt
 	
 	if [ "${1}" == "countdown" ]; then
 		echo "Loading quarters in..."
@@ -327,6 +328,7 @@ next_core_snes()
 		SNESrom="$(find $pathfs/Games/SNES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
 		echo "Next up on the Super Nintendo Entertainment System:"
 		echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+		echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f "${partunpath}" ]; then
@@ -334,12 +336,14 @@ next_core_snes()
 			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			echo "Next up on the Super Nintendo Entertainment System:"
 			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
 			SNESrom=/tmp/SNEStmp.sfc
 		else
 			get_partun
 			SNESrom=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			echo "Next up on the Super Nintendo Entertainment System:"
 			echo -e "\e[1m $(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			echo "$(echo $(basename "${SNESrom}") | sed -e 's/\.[^.]*$//') (SNES)" > /tmp/Attract_Game.txt
 			SNESrom=/tmp/SNEStmp.sfc
 		fi
 	fi
@@ -382,6 +386,7 @@ next_core_genesis()
 		Genesisrom="$(find $pathfs/Games/Genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
 		echo "Next up on the Sega Genesis:"
 		echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+		echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
 	else 
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f ${partunpath} ] ; then
@@ -389,12 +394,14 @@ next_core_genesis()
 			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			echo "Next up on the Sega Genesis:"
 			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
 			Genesisrom=/tmp/Genesistmp.md
 		else
 			get_partun
 			Genesisrom=$(${partunpath} "$(ls $pathfs/Games/Genesis/\@Ge*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			echo "Next up on the Sega Genesis:"
 			echo -e "\e[1m $(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+			echo "$(echo $(basename "${Genesisrom}") | sed -e 's/\.[^.]*$//') (Genesis)" > /tmp/Attract_Game.txt
 			Genesisrom=/tmp/Genesistmp.md
 		fi
 
@@ -456,6 +463,7 @@ next_core_tgfx16cd()
 
 	echo "Next up on the TurboGrafx-16 CD - AKA PC Engine CD:"
 	echo -e "\e[1m $(echo $(basename "${tgfx16cdrom}") | sed -e 's/\.[^.]*$//') \e[0m"
+	echo "$(echo $(basename "${tgfx16rom}") | sed -e 's/\.[^.]*$//') (TGFX16CD)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -499,6 +507,7 @@ next_core_neogeo()
 
 	echo "Next up on the NEO GEO:"
 	echo -e "\e[1m $(echo $(basename "${neogeo}") | sed -e 's/\.[^.]*$//') \e[0m"
+	echo "$(echo $(basename "${neogeo}") | sed -e 's/\.[^.]*$//') (NeoGeo)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
@@ -544,6 +553,7 @@ next_core_megacd()
 
 	echo "Next up on the Sega Mega CD"
 	echo -e "\e[1m $(echo $(basename "${megacd}") | sed -e 's/\.[^.]*$//') \e[0m"
+	echo "$(echo $(basename "${megacd}") | sed -e 's/\.[^.]*$//') (MegaCD)" > /tmp/Attract_Game.txt
 
 
 	if [ "${1}" == "countdown" ]; then
