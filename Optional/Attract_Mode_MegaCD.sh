@@ -1,1 +1,1 @@
-"$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"/Attract_Mode.sh megacd
+"$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"/Attract_Mode.sh megacd ${@}
