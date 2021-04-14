@@ -472,11 +472,11 @@ next_core_tgfx16()
   # Tell MiSTer to load the next TGFX16 ROM
   if [ -f "${mbcpath}" ] ; then
 	#echo "MBC installed. Launching now"
-	"${mbcpath}" load_rom TURBOGRAFX16 "$TGFX16rom" > /dev/null 2>&1
+	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	"${mbcpath}" load_rom TURBOGRAFX16 "$TGFX16rom" > /dev/null 2>&1		
+	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1		
   fi
 }
 
