@@ -19,9 +19,6 @@ Currently supported MiSTer cores:
 ## MiSTer Configuration
 The [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works great for putting system files in the right places.
 
-### USB Storage
-/media/usb may cause issues due to NTFS being case-sensitive on MiSTer.
-
 ### Console Cores
 Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.
 
@@ -44,5 +41,14 @@ Want to exclude certain arcade games? Just add them to `mraexclude` in the `Attr
 ## How it works
 MiSTer arcade cores are launched via a MiSTer command. For console games there is no official way to load individual games programmatically. Attract Mode automates the process by sending simulated button presses to the MiSTer. This is done with a modified version of [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
 
-## Mister Bug
+## Troubleshooting
+- Core is loaded but just hangs on the menu
+Might be the zip pack you are using. We currently support Everdrive and unpacked games. For CD based systems only CHD is supported
+- Problem with controller not accepting input after running the script for a long time
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is under investigation.
+- NeoGeo
+Sometimes NeoGeo doesn't load a rom and hangs on the menu - Still investigating why this is happening
+- USB Storage
+/media/usb may not work with the script currently due to NTFS being case-sensitive on MiSTer.
+
+
