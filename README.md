@@ -55,7 +55,7 @@ Still investigating why this is happening
 Make sure you use a bios that auto launches the game  
 
 **- Can I use a CIFS mount for my games?**  
-Yes! You have to mount over your games folder and change `Base_Path`
+Yes, we support CIFS!
 Here is an example of `cifs_mount.sh`
 ```
 SERVER="192.168.1.10"  
