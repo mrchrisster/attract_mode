@@ -474,12 +474,12 @@ next_core_tgfx16cd()
 
 # ======== MAIN ========
 echo "Starting up, please wait a minute..."
-parse_ini										# Overwrite default values from INI
-curl_check									# Check network environment, configure curl
-get_partun									# Download ZIP tool
-get_mbc											# Download MiSTer control tool
+parse_ini								# Overwrite default values from INI
+curl_check								# Check network environment, configure curl
+get_partun								# Download ZIP tool
+get_mbc									# Download MiSTer control tool
 build_mralist								# Generate list of MRAs
-parse_cmdline ${@}					# Parse command line parameters for input
-there_can_be_only_one "$$" "${0}" # Terminate any other running Attract Mode processes
-loop_core										# Let Mortal Kombat begin!
-exit 1											# We should never exit here, so if we do something is wrong
+parse_cmdline ${@}							# Parse command line parameters for input
+there_can_be_only_one "$$" "${0}" 					# Terminate any other running Attract Mode processes
+loop_core								# Let Mortal Kombat begin!
+exit 1									# We should never exit here, so if we do something is wrong
