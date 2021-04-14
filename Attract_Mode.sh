@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# https://github.com/mrchrisster/mister-arcade-attract/
 # Copyright (c) 2021 by mrchrisster and Mellified
 
 # This program is free software: you can redistribute it and/or modify
@@ -16,16 +17,17 @@
 # This cycles through arcade cores periodically
 # Games are randomly pulled from all MRAs or a user-provided list
 
-
 # ======== Credits ========
 # Original concept and implementation by: mrchrisster
 # Additional development by: Mellified
-# And thanks to kaloun34 & woelper for contributing!
-# https://github.com/mrchrisster/mister-arcade-attract/
+#
+# Thanks for the contributions and support:
+#  kaloun34, woelper, retrodriven, LamerDeluxe
 
 
-## Default Variables, change in ini
-corelist="snes,genesis,tgfx16cd,arcade,megacd"
+# ======== DEFAULT VARIABLES ========
+# Change these in the INI file
+corelist="arcade,genesis,megacd,neogeo,nes,snes,tgfx16,tgfx16cd"
 timer=120
 pathfs=/media/fat
 
@@ -33,18 +35,22 @@ pathfs=/media/fat
 # you can change the Path to ${pathfs}/linux for example
 mbcpath=/tmp/mbc
 partunpath=/tmp/partun
+
 # Match files case-insensitive
 #shopt -s nocasematch
 
-# ========= ARCADE OPTIONS =========
+# ======== ARCADE OPTIONS ========
 mralist=/tmp/.Attract_Mode
 mrapath=${pathfs}/_Arcade
 mrapathvert="${pathfs}/_Arcade/_Organized/_6 Rotation/_Vertical CW 90 Deg"
 mrapathhoriz="${pathfs}/_Arcade/_Organized/_6 Rotation/_Horizontal"
 orientation=All
 
+# ======== CONSOLE OPTIONS ========
+ignorezip="No"
 
-## Basic Functions
+
+# ======== BASIC FUNCTIONS ========
 parse_ini()
 {
 	basepath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -69,38 +75,41 @@ parse_ini()
 	corelist="$(echo ${corelist} | tr ',' ' ')"
 }
 
-
 parse_cmdline()
 {
-	for argument in "${@}"; do
-		case ${argument} in
-			snes)
-				echo "Super Nintendo Entertainment System selected!"
-				declare -g corelist="snes"
+	for arg in "${@}"; do
+		case ${arg} in
+			arcade)
+				echo "MiSTer Arcade selected!"
+				declare -g corelist="arcade"
 				;;
 			genesis)
 				echo "Sega Genesis selected!"
 				declare -g corelist="genesis"
 				;;
-			tgfx16cd)
-				echo "TurboGrafx-16 CD selected!"
-				declare -g corelist="tgfx16cd"
-				;;
 			megacd)
 				echo "Sega MegaCD selected!"
 				declare -g corelist="megacd"
 				;;
-			tgfx16)
-				echo "TurboGRAFX16 selected!"
-				declare -g corelist="tgfx16"
-				;;
-			arcade)
-				echo "MiSTer Arcade selected!"
-				declare -g corelist="arcade"
-				;;
 			neogeo)
 				echo "SNK NeoGeo selected!"
 				declare -g corelist="neogeo"
+				;;
+			nes)
+				echo "Nintendo Entertainment System selected!"
+				declare -g corelist="nes"
+				;;
+			snes)
+				echo "Super Nintendo Entertainment System selected!"
+				declare -g corelist="snes"
+				;;
+			tgfx16cd)
+				echo "TurboGrafx-16 CD selected!"
+				declare -g corelist="tgfx16cd"
+				;;
+			tgfx16)
+				echo "TurboGRAFX16 selected!"
+				declare -g corelist="tgfx16"
 				;;
 			lucky) # Load one random core and exit with pause
 				gonext="get_lucky"
@@ -111,7 +120,7 @@ parse_cmdline()
 		esac
 	done
 
-	# If we need to go somewhere special next do it here
+	# If we need to go somewhere special - do it here
 	if [ ! -z "${gonext}" ]; then
 		${gonext}
 		exit 0
@@ -129,33 +138,10 @@ there_can_be_only_one()
 	echo "$(pidof $(basename ${1}))" > /var/run/attract.pid
 }
 
-loop_core()
-{
-	while :; do
-		next_core
-		sleep ${timer}
-	done
-}
 
-next_core()
+# ======== TOOLS NEEDED FOR CONSOLE CORES ========
+curl_check()
 {
-	next=$(echo ${corelist}| xargs shuf -n1 -e)
-	next_core_${next} ${1}
-}
-
-mister_clean()
-{
-	# echo "Restarting MiSTer Menu core, helps with keeping things working"
-	killall MiSTer > /dev/null 2> /dev/null || :
-	/media/fat/MiSTer > /dev/null 2>&1 &
-	disown
-}
-
-
-# ========= TOOLS NEEDED FOR CONSOLE CORES =========
-get_mbc()
-{
-	# Downloading Mister Batch Command - launching roms from shell
 	ALLOW_INSECURE_SSL="true"
 	SSL_SECURITY_OPTION=""
 	curl --connect-timeout 15 --max-time 600 --retry 3 --retry-delay 5 \
@@ -166,7 +152,7 @@ get_mbc()
 		60)
 			if [[ "${ALLOW_INSECURE_SSL}" == "true" ]]
 			then
-				SSL_SECURITY_OPTION="--insecure"
+				declare -g SSL_SECURITY_OPTION="--insecure"
 			else
 				echo "CA certificates need"
 				echo "to be fixed for"
@@ -183,77 +169,98 @@ get_mbc()
 			;;
 	esac
 	set -e
+}
 
-	if [ ! -f "${mbcpath}" ] ; then
-		REPOSITORY_URL="https://github.com/mrchrisster/MiSTer_Batch_Control"
-		echo "Downloading mbc - a tool needed for launching roms"
-		echo "Created for MiSTer by Pocomane"
-		echo "${REPOSITORY_URL}"
-		echo ""
-
+curl_download() # curl_download ${filepath} ${URL}
+{
 		curl \
 			--connect-timeout 15 --max-time 600 --retry 3 --retry-delay 5 --silent --show-error \
 			${SSL_SECURITY_OPTION} \
 			--fail \
 			--location \
-			-o "${mbcpath}" \
-			"${REPOSITORY_URL}/blob/master/mbc?raw=true"
-			chmod +x "${mbcpath}"
+			-o "${1}" \
+			"${2}"
+			chmod +x "${1}"
+}
 
+get_mbc()
+{
+	if [ ! -f "${mbcpath}" ] ; then
+		REPOSITORY_URL="https://github.com/mrchrisster/MiSTer_Batch_Control"
+		echo ""
+		echo "Downloading mbc - a tool needed for launching roms"
+		echo "Created for MiSTer by Pocomane"
+		echo "${REPOSITORY_URL}"
+		curl_download "${mbcpath}" "${REPOSITORY_URL}/blob/master/mbc?raw=true"
 	else
 		echo "Mister Batch Control is installed, continuing..."
 	fi
 }
 
-
 get_partun()
 {
-	# Downloading partun - unzip tool for large zip archives
-	ALLOW_INSECURE_SSL="true"
-	SSL_SECURITY_OPTION=""
-	curl --connect-timeout 15 --max-time 600 --retry 3 --retry-delay 5 \
-	 --silent --show-error "https://github.com" > /dev/null 2>&1
-	case $? in
-		0)
-			;;
-		60)
-			if [[ "${ALLOW_INSECURE_SSL}" == "true" ]]
-			then
-				SSL_SECURITY_OPTION="--insecure"
-			else
-				echo "CA certificates need"
-				echo "to be fixed for"
-				echo "using SSL certificate"
-				echo "verification."
-				echo "Please fix them i.e."
-				echo "using security_fixes.sh"
-				exit 2
-			fi
-			;;
-		*)
-			echo "No Internet connection"
-			exit 1
-			;;
-	esac
-
+	if [ ! -f "${partunpath}" ]; then
 		REPOSITORY_URL="https://github.com/woelper/partun"
+		echo ""
 		echo "Downloading partun - needed for unzipping roms from big archives."
 		echo "Created for MiSTer by woelper"
 		echo "${REPOSITORY_URL}"
-		echo ""
-
-		curl \
-			--connect-timeout 15 --max-time 600 --retry 3 --retry-delay 5 --silent --show-error \
-			${SSL_SECURITY_OPTION} \
-			--fail \
-			--location \
-			-o "${partunpath}" \
-			"${REPOSITORY_URL}/releases/download/0.1.5/partun_armv7"
-			chmod +x "${partunpath}"
+		curl_download "${partunpath}" "${REPOSITORY_URL}/releases/download/0.1.5/partun_armv7"
+	else
+		echo "Partun is installed, continuing..."
+	fi
 }
 
 
-# ========= ARCADE MODE =========
+# ======== MISTER CORE FUNCTIONS ========
+loop_core()
+{
+	while :; do
+		next_core
+		sleep ${timer}
+	done
+}
+
+next_core()
+{
+	next=$(echo ${corelist}| xargs shuf -n1 -e)
+	next_core_${next} ${1}
+}
+
+load_core() 	# load_core CORE /path/to/rom (countdown)
+{	
+	echo ""
+	echo "Next up on the ${1}:"
+	echo -e "\e[1m $(echo $(basename "${2}") | sed -e 's/\.[^.]*$//') \e[0m"
+	echo "$(echo $(basename "${2}") | sed -e 's/\.[^.]*$//') (${1})" > /tmp/Attract_Game.txt
+
+	if [ "${3}" == "countdown" ]; then
+		echo "Loading in..."
+		for i in {5..1}; do
+			echo "${i} seconds"
+			sleep 1
+		done
+	fi
+
+	"${mbcpath}" load_rom ${1} "${2}" > /dev/null 2>&1
+}
+
+core_error() # core_error corename /path/to/ROM
+{
+	echo "Something went wrong! No valid game found for core ${1} - rom ${2}."
+	loop_core
+}	
+
+# ======== LUCKY FUNCTION ========
+get_lucky()
+{
+	echo "So you're feeling lucky?"
+	echo ""
+	next_core countdown
+}
+
+
+# ======== ARCADE MODE ========
 build_mralist()
 {
 	# If no MRAs found - suicide!
@@ -295,7 +302,7 @@ next_core_arcade()
 		loop_core
 	fi
 
-	echo "Next up at the Arcade:"
+	echo "Next up at the arcade:"
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
 	
@@ -312,318 +319,167 @@ next_core_arcade()
 }
 
 
-get_lucky()
-{
-	echo "So you're feeling lucky?"
-	echo ""
-	
-	next_core countdown
-}
-
-	
-# ========= SNES MODE =========
-next_core_snes()
-{
-	# Check if roms are zipped
-	if [ -z "$(find $pathfs/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \))" ] 
-	then 
-		#echo "Your rom archive seems to be unzipped" 
-		SNESrom="$(find $pathfs/Games/SNES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
-		SNESsh="${SNESrom}"
-	else 
-		#echo "Need to use partun for unpacking random roms"
-		if [ -f "${partunpath}" ]; then
-			#echo "Partun installed. Launching now"
-			SNESsh=$("${partunpath}" "$(find $pathfs/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
-			SNESrom=/tmp/SNEStmp.sfc
-		else
-			get_partun
-			SNESsh=$("${partunpath}" "$(find $pathfs/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
-			SNESrom=/tmp/SNEStmp.sfc
-		fi
-	fi
-
-
-	if [ -z "$SNESrom" ]; then
-		echo "Something went wrong. There is no valid file in SNESrom variable."
-		loop_core
-	fi
-	
-	echo "Next up on the Super Nintendo Entertainment System:"
-	echo -e "\e[1m $(echo $(basename "${SNESsh}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-  if [ -f "${mbcpath}" ] ; then
-	
-	"${mbcpath}" load_rom SNES "$SNESrom" > /dev/null 2>&1
-	
-  else
-	get_mbc
-	"${mbcpath}" load_rom SNES "$SNESrom" > /dev/null 2>&1
-  fi
-}
-
-
-# ========= Genesis MODE =========
+# ======== ROM CORES ========
+# ======== GENESIS MODE (NOT PHIL) ========
 next_core_genesis()
 {
-	# Check if roms are zipped
-	if [ -z "$(find $pathfs/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \))" ] 
-	then 
-		#echo "Your rom archive seems to be unzipped" 
-		Genesisrom="$(find $pathfs/Games/Genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
-		Genesissh="${Genesisrom}"
-	else 
-		#echo "Need to use partun for unpacking random roms"
-		if [ -f ${partunpath} ] ; then
-			#echo "Partun installed. Launching now"
-			Genesissh=$(${partunpath} "$(find $pathfs/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
-			Genesisrom=/tmp/Genesistmp.md
-		else
-			get_partun
-			Genesissh=$(${partunpath} "$(find $pathfs/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
-			Genesisrom=/tmp/Genesistmp.md
-		fi
+	corename="GENESIS"
 
+	# If not ZIP in game directory OR if ignoring ZIP
+	if [ -z "$(find ${pathfs}/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
+		corerom="$(find ${pathfs}/Games/Genesis -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *VGM* \) -prune -false -o -name '*.md' | shuf -n 1)"
+		coresh="${corerom}"
+	else # Use ZIP
+		coresh=$("${partunpath}" "$(find ${pathfs}/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
+		corerom="/tmp/Genesistmp.md"
 	fi
 
-
-	if [ -z "$Genesisrom" ]; then
-		echo "Something went wrong. There is no valid file in Genesisrom variable."
-		loop_core
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
 	fi
-	
-	echo "Next up on the Sega Genesis:"
-	echo -e "\e[1m $(echo $(basename "${Genesissh}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-
-  # Tell MiSTer to load the next Genesis ROM
-  if [ -f "${mbcpath}" ] ; then
-	#echo "MBC installed. Launching now"
-	"${mbcpath}" load_rom GENESIS "$Genesisrom" > /dev/null 2>&1
-	
-  else
-	get_mbc
-	"${mbcpath}" load_rom GENESIS "$Genesisrom" > /dev/null 2>&1		
-  fi
 }
 
-# ========= TGFX16 MODE =========
+
+# ======== NES MODE ========
+next_core_nes()
+{
+	corename="NES"
+
+	# If not ZIP in game directory OR if ignoring ZIP
+	if [ -z "$(find ${pathfs}/Games/NES -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
+		corerom="$(find ${pathfs}/Games/NES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *FDS* \) -prune -false -o -name '*.nes' | shuf -n 1)"
+		coresh="${corerom}"
+	else # Use ZIP
+		coresh=$("${partunpath}" "$(find ${pathfs}/Games/NES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f nes --rename /tmp/NEStmp.sfc)
+		corerom="/tmp/NEStmp.sfc"
+	fi
+
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
+	fi
+}
+
+
+# ======== SNES MODE ========
+next_core_snes()
+{
+	corename="SNES"
+
+	# If not ZIP in game directory OR if ignoring ZIP
+	if [ -z "$(find ${pathfs}/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
+		corerom="$(find ${pathfs}/Games/SNES -type d \( -name *Eu* -o -name *BIOS* -o -name *Other* -o -name *SPC* \) -prune -false -o -name '*.sfc' | shuf -n 1)"
+		coresh="${corerom}"
+	else # Use ZIP
+		coresh=$("${partunpath}" "$(find ${pathfs}/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
+		corerom="/tmp/SNEStmp.sfc"
+	fi
+
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
+	fi
+}
+
+
+# ======== TGFX16 MODE ========
 next_core_tgfx16()
 {
-	# Check if roms are zipped
-	if [ -z "$(find $pathfs/Games/TGFX16 -maxdepth 1 -type f \( -iname "*.zip" \))" ] 
-	then 
-		#echo "Your rom archive seems to be unzipped" 
-		TGFX16rom="$(find $pathfs/Games/TGFX16 -type d \( -name *Eu* -o -name *Bios* -o -name *Music* -o -name *NES2PCE* \) -prune -false -o -name '*.pce' | shuf -n 1)"
-		TGFX16sh="${TGFX16rom}"
-	else 
-		#echo "Need to use partun for unpacking random roms"
-		if [ -f ${partunpath} ] ; then
-			#echo "Partun installed. Launching now"
-			TGFX16sh=$(${partunpath} "$(find $pathfs/Games/TGFX16 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
-			TGFX16rom=/tmp/TGFX16tmp.pce
-		else
-			get_partun
-			TGFX16sh=$(${partunpath} "$(find $pathfs/Games/TGFX16 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
-			TGFX16rom=/tmp/TGFX16tmp.pce
-		fi
+	corename="TURBOGRAFX16"
 
+	# If not ZIP in game directory OR if ignoring ZIP
+	if [ -z "$(find ${pathfs}/Games/TGFX16 -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
+		corerom="$(find ${pathfs}/Games/TGFX16 -type d \( -name *Eu* -o -name *Bios* -o -name *Music* -o -name *NES2PCE* \) -prune -false -o -name '*.pce' | shuf -n 1)"
+		coresh="${corerom}"
+	else # Use ZIP
+		coresh=$("${partunpath}" "$(find ${pathfs}/Games/TGFX16 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
+		corerom="/tmp/TGFX16tmp.pce"
 	fi
 
-
-	if [ -z "$TGFX16rom" ]; then
-		echo "Something went wrong. There is no valid file in tgfx16rom variable."
-		loop_core
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
 	fi
-	
-	echo "Next up on the TurboGrafx-16 - AKA PC Engine:"
-	echo -e "\e[1m $(echo $(basename "${TGFX16sh}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-
-  # Tell MiSTer to load the next TGFX16 ROM
-  if [ -f "${mbcpath}" ] ; then
-	#echo "MBC installed. Launching now"
-	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1
-	
-  else
-	get_mbc
-	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1		
-  fi
 }
-
-	
-	
-# ========= TGFX16-CD MODE =========
-next_core_tgfx16cd()
-{
-	# Check if roms are cue or chd
-	if [ -z "$(find $pathfs/Games/TGFX16-CD -type f \( -iname "*.chd" \))" ] 
-	then 
-		echo "TGFX16-CD: Roms are cue - Not supported yet"
-		loop_core
-		
-	else 
-		#echo "Roms are chd" 
-		tgfx16cdrom="$(find $pathfs/Games/TGFX16-CD -name '*.chd' | shuf -n 1)"
-		#echo $tgfx16cdrom
-
-	fi
-
-
-	if [ -z "$tgfx16cdrom" ]; then
-		echo "Something went wrong. There is no valid file in tgfx16cdrom variable."
-		loop_core
-	fi
 	
 
-	echo "Next up on the TurboGrafx-16 CD - AKA PC Engine CD:"
-	echo -e "\e[1m $(echo $(basename "${tgfx16cdrom}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-  # Tell MiSTer to load the next game
-  if [ -f "${mbcpath}" ] ; then
-		#echo "MBC installed. Launching now"
-		"${mbcpath}" load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1
-  else
-		get_mbc
-		"${mbcpath}" load_rom TURBOCD "$tgfx16cdrom" > /dev/null 2>&1
-  fi
-}
-
-# ========= NEOGEO MODE =========
-next_core_neogeo()
-{
-	# Check if roms are cue or chd
-	if [ -z "$(find $pathfs/Games/NEOGEO -type f \( -iname "*.neo" \))" ] 
-	then 
-		echo "NEOGEO: Not supported format, please use .neo"
-		loop_core
-		
-	else  
-		neogeo="$(find $pathfs/Games/NEOGEO -name '*.neo' | shuf -n 1)"
-
-	fi
-
-
-	if [ -z "$neogeo" ]; then
-		echo "Something went wrong. There is no valid file in neogeo variable."
-		loop_core
-	fi
-	
-
-	echo "Next up on the NEO GEO:"
-	echo -e "\e[1m $(echo $(basename "${neogeo}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-  # Tell MiSTer to load the next game
-  if [ -f "${mbcpath}" ] ; then
-		#echo "MBC installed. Launching now"
-		"${mbcpath}" load_rom NEOGEO "$neogeo" > /dev/null 2>&1
-  else
-		get_mbc
-		"${mbcpath}" load_rom NEOGEO "$neogeo" > /dev/null 2>&1
-  fi
-}
-
-# ========= MEGA-CD MODE =========
-
+# ======== DISC CORES ========	
+# ======== MEGA-CD MODE ========
 next_core_megacd()
 {
+	corename="MEGACD"
+
 	# Check if roms are cue or chd
-	if [ -z "$(find $pathfs/Games/megacd -type f \( -iname "*.chd" \))" ] 
-	then 
+	if [ -z "$(find ${pathfs}/Games/megacd -type f \( -iname "*.chd" \))" ]; then 
 		echo "MegaCD: Roms are cue - Not supported yet"
 		loop_core
-		
-	else 
-		#echo "Roms are chd" 
-		megacd="$(find $pathfs/Games/MegaCD -name '*.chd' | shuf -n 1)"
-
+	else # Use CHD
+		corerom="$(find ${pathfs}/Games/megacd -type f \( -iname "*.chd" \) | shuf -n 1)"
 	fi
 
-
-	if [ -z "$megacd" ]; then
-		echo "Something went wrong. There is no valid file in megacd variable."
-		loop_core
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
 	fi
-	
-
-	echo "Next up on the Sega Mega CD"
-	echo -e "\e[1m $(echo $(basename "${megacd}") | sed -e 's/\.[^.]*$//') \e[0m"
-
-
-	if [ "${1}" == "countdown" ]; then
-		echo "Loading in..."
-		for i in {5..1}; do
-			echo "${i} seconds"
-			sleep 1
-		done
-	fi
-
-  # Tell MiSTer to load the next game
-  if [ -f "${mbcpath}" ] ; then
-		#echo "MBC installed. Launching now"
-		"${mbcpath}" load_rom MEGACD "$megacd" > /dev/null 2>&1
-  else
-		get_mbc
-		"${mbcpath}" load_rom MEGACD "$megacd" > /dev/null 2>&1
-  fi
 }
 
 
-# ========= GENERAL EXECUTION =========
-echo "Starting up, please wait a moment"
-parse_ini
-build_mralist
-parse_cmdline ${@}
-there_can_be_only_one ${0}
+# ======== NEOGEO MODE ========
+next_core_neogeo()
+{
+	corename="NEOGEO"
 
-# Let Mortal Kombat begin!
-loop_core
+	# Check if roms are neo
+	if [ -z "$(find ${pathfs}/Games/NEOGEO -type f \( -iname "*.neo" \))" ]; then 
+		echo "NEOGEO: Not supported format, please use .neo"
+		loop_core
+	else # Use neo
+		corerom="$(find ${pathfs}/Games/NEOGEO -type f \( -iname "*.neo" \) | shuf -n 1)"
+	fi
 
-exit 0
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
+	fi
+}
+
+
+# ======== TGFX16-CD MODE ========
+next_core_tgfx16cd()
+{
+	corename="TURBOCD"
+	
+	# Check if roms are cue or chd
+	if [ -z "$(find ${pathfs}/Games/TGFX16-CD -type f \( -iname "*.chd" \))" ]; then 
+		echo "TGFX16-CD: Roms are cue - Not supported yet"
+		loop_core
+	else # Use CHD
+		corerom="$(find ${pathfs}/Games/TGFX16-CD -type f \( -iname "*.chd" \) | shuf -n 1)"
+	fi
+
+	if [ -z "${corerom}" ]; then
+		core_error ${corename} "${corerom}"
+	else
+		load_core ${corename} "${corerom}" "${1}"
+	fi
+}
+
+
+# ======== MAIN ========
+echo "Starting up, please wait a minute..."
+parse_ini										# Overwrite default values from INI
+curl_check									# Check network environment, configure curl
+get_partun									# Download ZIP tool
+get_mbc											# Download MiSTer control tool
+build_mralist								# Generate list of MRAs
+parse_cmdline ${@}					# Parse command line parameters for input
+there_can_be_only_one ${0}	# Terminate any other running Attract Mode processes
+loop_core										# Let Mortal Kombat begin!
+exit 1											# We should never exit here, so if we do something is wrong
