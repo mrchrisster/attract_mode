@@ -10,10 +10,13 @@ To cycle through the supported MiSTer cores, copy `Attract_Mode.sh` and `Attract
 ## Supported Systems
 Currently supported MiSTer cores:
 * Arcade
+* Game Boy Advance
 * Genesis
-* Mega CD
-* Neo Geo
+* MegaCD AKA SegaCD
+* NeoGeo
+* NES
 * SNES
+* TurboGrafx-16 AKA PC Engine
 * TurboGrafx-16 CD AKA PC Engine CD
 
 ## MiSTer Configuration
