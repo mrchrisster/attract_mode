@@ -22,7 +22,7 @@
 # Additional development by: Mellified
 #
 # Thanks for the contributions and support:
-#  kaloun34, woelper, retrodriven, LamerDeluxe
+# pocomane, kaloun34, woelper, retrodriven, LamerDeluxe
 
 
 # ======== DEFAULT VARIABLES ========
@@ -387,12 +387,12 @@ load_core_arcade()
 # ======== MAIN ========
 echo "Starting up, please wait a minute..."
 parse_ini										# Overwrite default values from INI
-curl_check									# Check network environment, configure curl
-get_partun									# Download ZIP tool
+curl_check										# Check network environment, configure curl
+get_partun										# Download ZIP tool
 get_mbc											# Download MiSTer control tool
-build_mralist								# Generate list of MRAs
+build_mralist										# Generate list of MRAs
 init_data										# Setup data arrays
-parse_cmdline ${@}					# Parse command line parameters for input
-there_can_be_only_one "$$" "${0}" # Terminate any other running Attract Mode processes
+parse_cmdline ${@}									# Parse command line parameters for input
+there_can_be_only_one "$$" "${0}"							 # Terminate any other running Attract Mode processes
 loop_core										# Let Mortal Kombat begin!
 exit 1											# We should never exit here, so if we do something is wrong
