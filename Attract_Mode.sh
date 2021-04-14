@@ -334,11 +334,11 @@ next_core_snes()
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f "${partunpath}" ]; then
 			#echo "Partun installed. Launching now"
-			SNESsh=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
+			SNESsh=$("${partunpath}" "$(find $pathfs/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			SNESrom=/tmp/SNEStmp.sfc
 		else
 			get_partun
-			SNESsh=$("${partunpath}" "$(ls $pathfs/Games/SNES/\@SN*.zip | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
+			SNESsh=$("${partunpath}" "$(find $pathfs/Games/SNES -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f sfc --rename /tmp/SNEStmp.sfc)
 			SNESrom=/tmp/SNEStmp.sfc
 		fi
 	fi
@@ -385,11 +385,11 @@ next_core_genesis()
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f ${partunpath} ] ; then
 			#echo "Partun installed. Launching now"
-			Genesissh=$(${partunpath} "$(ls $pathfs/Games/Genesis/\*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
+			Genesissh=$(${partunpath} "$(find $pathfs/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			Genesisrom=/tmp/Genesistmp.md
 		else
 			get_partun
-			Genesissh=$(${partunpath} "$(ls $pathfs/Games/Genesis/\*.zip | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
+			Genesissh=$(${partunpath} "$(find $pathfs/Games/Genesis -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f md --rename /tmp/Genesistmp.md)
 			Genesisrom=/tmp/Genesistmp.md
 		fi
 
@@ -439,11 +439,11 @@ next_core_tgfx16()
 		#echo "Need to use partun for unpacking random roms"
 		if [ -f ${partunpath} ] ; then
 			#echo "Partun installed. Launching now"
-			TGFX16sh=$(${partunpath} "$(ls $pathfs/Games/TGFX16/\*.zip | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
+			TGFX16sh=$(${partunpath} "$(find $pathfs/Games/TGFX16 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
 			TGFX16rom=/tmp/TGFX16tmp.pce
 		else
 			get_partun
-			TGFX16sh=$(${partunpath} "$(ls $pathfs/Games/TGFX16/\*.zip | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
+			TGFX16sh=$(${partunpath} "$(find $pathfs/Games/TGFX16 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f pce --rename /tmp/TGFX16tmp.pce)
 			TGFX16rom=/tmp/TGFX16tmp.pce
 		fi
 
@@ -472,11 +472,11 @@ next_core_tgfx16()
   # Tell MiSTer to load the next TGFX16 ROM
   if [ -f "${mbcpath}" ] ; then
 	#echo "MBC installed. Launching now"
-	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1
+	"${mbcpath}" load_rom TURBOGRAFX16 "$TGFX16rom" > /dev/null 2>&1
 	
   else
 	get_mbc
-	"${mbcpath}" load_rom TGFX16 "$TGFX16rom" > /dev/null 2>&1		
+	"${mbcpath}" load_rom TURBOGRAFX16 "$TGFX16rom" > /dev/null 2>&1		
   fi
 }
 
