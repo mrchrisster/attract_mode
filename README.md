@@ -43,11 +43,15 @@ MiSTer arcade cores are launched via a MiSTer command. For console games there i
 
 ## Troubleshooting
 **- Core is loaded but just hangs on the menu**  
+  
 Might be the zip pack you are using. We currently support Everdrive and unpacked games. For CD based systems only CHD is supported
 **- Problem with controller not accepting input after running the script for a long time**  
-Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is under investigation.
+  
+Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is under investigation.  
+  
 **- Sometimes NeoGeo doesn't load a rom and hangs on the menu**   
-Still investigating why this is happening
+Still investigating why this is happening  
+  
 **- USB Storage**  
 /media/usb may not work with the script currently due to NTFS being case-sensitive on MiSTer.
 
