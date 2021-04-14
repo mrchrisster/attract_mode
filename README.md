@@ -43,7 +43,7 @@ MiSTer arcade cores are launched via a MiSTer command. For console games there i
 Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.  
   
 **- Problem with controller not accepting input after running the script for a long time**  
-Currently the Menu Core [causes issues](https://github.com/MiSTer-devel/Main_MiSTer/issues/379) where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is under investigation.  
+Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is [under investigation](https://github.com/MiSTer-devel/Main_MiSTer/issues/379).  
   
 **- Sometimes NeoGeo doesn't load a rom and hangs on the menu**   
 Still investigating why this is happening  
