@@ -19,9 +19,6 @@ Currently supported MiSTer cores:
 ## MiSTer Configuration
 The [Update-all](https://github.com/theypsilon/Update_All_MiSTer) script works great for putting system files in the right places.
 
-### Console Cores
-Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.
-
 ## Attract Mode Configuration
 ### Optional features
 Included in `/Optional/` are several additional scripts. These require `Attract_Mode.sh` to run.
@@ -43,7 +40,7 @@ MiSTer arcade cores are launched via a MiSTer command. For console games there i
 
 ## Troubleshooting
 **- Core is loaded but just hangs on the menu**  
-Might be the zip pack you are using. We currently support Everdrive zip archives and unpacked games. For CD based systems only CHD is supported  
+Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.  
   
 **- Problem with controller not accepting input after running the script for a long time**  
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is under investigation.  
