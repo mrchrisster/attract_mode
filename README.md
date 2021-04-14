@@ -56,7 +56,7 @@ Make sure you use a bios that auto launches the game
 
 **- Can I use a CIFS mount for my games?**  
 Yes! You have to mount over you games folder and change `Base_Path`
-Here is an example:
+Here is an example of `cifs_mount.sh`
 ```
 SERVER="192.168.1.10"  
 SHARE="Games/Mister/Games"  
