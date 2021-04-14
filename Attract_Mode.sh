@@ -389,7 +389,7 @@ next_core_snes()
 # ======== TGFX16 MODE ========
 next_core_tgfx16()
 {
-	corename="TURBOGRAFX16"
+	corename="TGFX16"
 
 	# If not ZIP in game directory OR if ignoring ZIP
 	if [ -z "$(find ${pathfs}/Games/TGFX16 -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then 
