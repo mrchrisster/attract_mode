@@ -14,8 +14,8 @@
 # GNU General Public License for more details.
 
 ## Description
-# This cycles through arcade cores periodically
-# Games are randomly pulled from all MRAs or a user-provided list
+# This cycles through arcade and console cores periodically
+# Games are randomly pulled from their respective folders
 
 # ======== Credits ========
 # Original concept and implementation by: mrchrisster
