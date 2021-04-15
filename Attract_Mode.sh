@@ -45,7 +45,6 @@ orientation=All
 
 # ======== CONSOLE OPTIONS ========
 ignorezip="No"
-# Disable Bootrom until Reboot (Prevents most cores loading default games on startup)
 disable_bootrom="Yes"
 
 # ======== CORE CONFIG DATA ========
@@ -436,7 +435,8 @@ load_core_arcade()
 
 # ======== MAIN ========
 echo "Starting up, please wait a minute..."
-parse_ini										# Overwrite default values from INI
+parse_ini									# Overwrite default values from INI
+disable_bootrom									# Disable Bootrom until Reboot 
 curl_check									# Check network environment, configure curl
 get_partun									# Download ZIP tool
 get_mbc											# Download MiSTer control tool
