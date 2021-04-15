@@ -45,7 +45,8 @@ orientation=All
 
 # ======== CONSOLE OPTIONS ========
 ignorezip="No"
-
+# Disable Bootrom until Reboot (Prevents most cores loading default games on startup)
+disable_bootrom="Yes"
 
 # ======== CORE CONFIG DATA ========
 init_data()
@@ -351,7 +352,18 @@ core_error() # core_error /path/to/ROM
 {
 	echo "Something went wrong! No valid game found for core ${nextcore} - rom ${1}."
 	return 1
-}	
+}
+
+disable_bootrom()
+{
+	if [ "${disable_bootrom}" == "Yes" ]; then
+		if [ ! -f "${pathfs}/Bootrom" ]; then
+			mount --bind /mnt "${pathfs}/Bootrom"
+		fi
+	else
+		echo "Bootrom directory won't be disabled"
+	fi
+}
 
 # ======== LUCKY FUNCTION ========
 get_lucky()
