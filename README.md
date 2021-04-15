@@ -2,9 +2,10 @@
 # MiSTer Attract Mode
 **Enjoy the wonderful pixel art and sounds from the games in your MiSTer library - automatically!**
 
-Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes. This is meant as a show! When you're done just ***cold reboot*** your MiSTer from the OSD (F12) menu - or use the power button.
-
 ## Usage
+Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes *unless you wiggle the mouse!* If you don't have a mouse connected you'll need to ***cold reboot*** your MiSTer from the OSD (F12) menu, or use the power button.
+
+## Installation
 To cycle through the supported MiSTer cores, copy `Attract_Mode.sh` and `Attract_Mode.ini` to `/media/fat/Scripts` Directory. The INI is optional, but strongly recommended if you want to customize behavior.
 
 ## Supported Systems
@@ -51,10 +52,10 @@ Make sure you are using the recommended folder structure, such as /media/fat/Gam
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is [under investigation](https://github.com/MiSTer-devel/Main_MiSTer/issues/379).  
   
 **- Sometimes NeoGeo doesn't load a rom and hangs on the menu**   
-Still investigating why this is happening  
+Still investigating why this is happening.
   
 **- USB Storage**  
-/media/usb may not work with the script currently due to NTFS being case-sensitive on MiSTer.
+/media/usb is not well tested. NTFS formatted drives may experience issues because NTFS is case-sensitive on MiSTer.
 
 **- Turbografx16 CD just showing Run button but not starting into the game**  
 Make sure you use a bios that auto launches the game  
