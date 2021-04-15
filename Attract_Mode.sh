@@ -50,6 +50,19 @@ ignorezip="No"
 # ======== CORE CONFIG DATA ========
 init_data()
 {
+	# Core to long name mappings
+	declare -gA CORE_PRETTY=( \
+		["arcade"]="MiSTer Arcade" \
+		["gba"]="Nintendo Game Boy Advance" \
+		["genesis"]="Sega Genesis / Megadrive" \
+		["megacd"]="Sega CD / Mega CD" \
+		["neogeo"]="SNK NeoGeo" \
+		["nes"]="Nintendo Entertainment System" \
+		["snes"]="Super Nintendo Entertainment System" \
+		["tgfx16"]="NEC TurboGrafx-16 / PC Engine" \
+		["tgfx16cd"]="NEC TurboGrafx-16 CD / PC Engine CD" \
+		)
+	
 	# Core to file extension mappings
 	declare -gA CORE_EXT=( \
 		["arcade"]="mra" \
@@ -106,9 +119,9 @@ parse_ini()
 	done
 
 	# Set mrapath based on orientation
-	if [ "${orientation}" == "Vertical" ]; then
+	if [ "${orientation,,}" == "vertical" ]; then
 		mrapath="${mrapathvert}"
-	elif [ "${orientation}" == "Horizontal" ]; then
+	elif [ "${orientation,,}" == "horizontal" ]; then
 		mrapath="${mrapathhoriz}"
 	fi
 	
@@ -121,39 +134,39 @@ parse_cmdline()
 	for arg in "${@}"; do
 		case ${arg,,} in
 			arcade)
-				echo "MiSTer Arcade selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="Arcade"
 				;;
 			gba)
-				echo "Nintendo Game Boy Advance selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="GBA"
 				;;
 			genesis)
-				echo "Sega Genesis selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="Genesis"
 				;;
 			megacd)
-				echo "Sega MegaCD selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="MegaCD"
 				;;
 			neogeo)
-				echo "SNK NeoGeo selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="NeoGeo"
 				;;
 			nes)
-				echo "Nintendo Entertainment System selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="NES"
 				;;
 			snes)
-				echo "Super Nintendo Entertainment System selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="SNES"
 				;;
 			tgfx16cd)
-				echo "TurboGrafx-16 CD selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="TGFX16CD"
 				;;
 			tgfx16)
-				echo "TurboGRAFX16 selected!"
+				echo "${CORE_PRETTY[${arg,,}]} selected!"
 				declare -g corelist="TGFX16"
 				;;
 			lucky) # Load one random core and exit with pause
@@ -278,7 +291,7 @@ next_core()
 		if [ -z "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then
 			corerom="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -name *Other* -name *VGM* -name *NES2PCE* -name *FDS* -name *SPC* -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
 		else # Use ZIP
-			coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
+			declare -g coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
 			corerom="/tmp/Extracted.${CORE_EXT[${nextcore,,}]}"
 		fi
 	else
@@ -288,16 +301,21 @@ next_core()
 	if [ -z "${corerom}" ]; then
 		core_error "${corerom}"
 	else
-		load_core "${corerom}" "${1}"
+		if [ -z "${coresh}" ]; then
+			load_core "${corerom}" "$(echo $(basename "${corerom}") | sed -e 's/\.[^.]*$//')" "${1}"
+		else
+			load_core "${corerom}" "$(echo $(basename "${coresh}") | sed -e 's/\.[^.]*$//')" "${1}"
+		fi
 	fi
 }
 
-load_core() 	# load_core /path/to/rom (countdown)
+load_core() 	# load_core /path/to/rom name_of_rom (countdown)
 {	
 	echo ""
-	echo "Next up on the ${nextcore}:"
-	echo -e "\e[1m $(echo $(basename "${1}") | sed -e 's/\.[^.]*$//') \e[0m"
-	echo "$(echo $(basename "${1}") | sed -e 's/\.[^.]*$//') (${nextcore})" > /tmp/Attract_Game.txt
+	echo -n "Next up on the "
+	echo -ne "\e[4m${CORE_PRETTY[${nextcore,,}]}:\e[0m "
+	echo -e "\e[1m${2}\e[0m"
+	echo "${2} (${nextcore})" > /tmp/Attract_Game.txt
 
 	if [ "${2}" == "countdown" ]; then
 		echo "Loading in..."
@@ -367,7 +385,7 @@ load_core_arcade()
 		return
 	fi
 
-	echo "Next up at the arcade:"
+	echo -n "Next up at the arcade: "
 	# Bold the MRA name - remove trailing .mra
 	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
 	
