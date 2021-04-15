@@ -3,7 +3,7 @@
 **Enjoy the wonderful pixel art and sounds from the games in your MiSTer library - automatically!**
 
 ## Usage
-Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes *unless you wiggle the mouse!* If you don't have a mouse connected you'll need to ***cold reboot*** your MiSTer from the OSD (F12) menu, or use the power button.
+Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes *unless you wiggle the mouse!* If you don't have a mouse connected to your MiSTer you'll need to ***cold reboot*** your MiSTer from the OSD (F12) menu, or use the power button.
 
 ## Installation
 To cycle through the supported MiSTer cores, copy `Attract_Mode.sh` and `Attract_Mode.ini` to `/media/fat/Scripts` Directory. The INI is optional, but strongly recommended if you want to customize behavior.
@@ -42,7 +42,7 @@ Want to exclude certain arcade games? Just add them to `mraexclude` in the `Attr
 ## How it works
 MiSTer arcade cores are launched via a MiSTer command. For console games there is no official way to load individual games programmatically. Attract Mode automates the process by sending simulated button presses to the MiSTer. This is done with a modified version of [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
   
-If you would like to know what game is currently playing, you can either run the script through SSH or check the file `/tmp/Attract_Game.txt`  
+If you would like to know what game is currently playing, you can either run the script through SSH or check the file `/tmp/Attract_Game.txt`. Some folks even use this with OBS to automatically change the game name in their Twitch stream!  
   
 ## Troubleshooting
 **- Core is loaded but just hangs on the menu**  
