@@ -313,7 +313,7 @@ load_core() 	# load_core /path/to/rom name_of_rom (countdown)
 {	
 	echo ""
 	echo -n "Next up on the "
-	echo -ne "\e[4m${CORE_PRETTY[${nextcore,,}]}:\e[0m "
+	echo -ne "\e[4m${CORE_PRETTY[${nextcore,,}]}\e[0m: "
 	echo -e "\e[1m${2}\e[0m"
 	echo "${2} (${nextcore})" > /tmp/Attract_Game.txt
 
