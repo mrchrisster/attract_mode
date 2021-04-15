@@ -40,10 +40,12 @@ Want to exclude certain arcade games? Just add them to `mraexclude` in the `Attr
 
 ## How it works
 MiSTer arcade cores are launched via a MiSTer command. For console games there is no official way to load individual games programmatically. Attract Mode automates the process by sending simulated button presses to the MiSTer. This is done with a modified version of [pocomane's MiSTer Batch Control](https://github.com/pocomane/MiSTer_Batch_Control). 
-
+  
+If you would like to know what game is currently playing, you can either run the script through SSH or check the file `/tmp/Attract_Game.txt`  
+  
 ## Troubleshooting
 **- Core is loaded but just hangs on the menu**  
-Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format.  
+Make sure you are using the recommended folder structure, such as /media/fat/Games/SNES/. The script supports zipped Everdrive packs or unzipped folders. For MegaCD and Turbografx16 CD games must be in CHD format. We noticed that some MegaCD games that the script is trying to load also won't work when loaded through the MiSTer interface.
   
 **- Problem with controller not accepting input after running the script for a long time**  
 Currently the Menu Core causes issues where games stop changing and new input is not accepted after a certain time (If 20s timer it takes around an hour to fail). Unfortunately, only physically turning the Mister off fixes this. The issue is [under investigation](https://github.com/MiSTer-devel/Main_MiSTer/issues/379).  
