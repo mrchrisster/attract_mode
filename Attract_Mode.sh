@@ -385,10 +385,11 @@ load_core_arcade()
 		return
 	fi
 
-	echo -n "Next up at the arcade: "
-	# Bold the MRA name - remove trailing .mra
-	echo -e "\e[1m $(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') \e[0m"
-	
+	echo -n "Next up at the "
+	echo -ne "\e[4m${CORE_PRETTY[${nextcore,,}]}\e[0m: "
+	echo -e "\e[1m$(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//')\e[0m"
+	echo "$(echo $(basename "${mra}") | sed -e 's/\.[^.]*$//') (${nextcore})" > /tmp/Attract_Game.txt
+
 	if [ "${1}" == "countdown" ]; then
 		echo "Loading quarters in..."
 		for i in {5..1}; do
