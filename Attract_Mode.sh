@@ -356,8 +356,11 @@ core_error() # core_error /path/to/ROM
 disable_bootrom()
 {
 	if [ "${disable_bootrom}" == "Yes" ]; then
-		if [ ! -f "${pathfs}/Bootrom" ]; then
+		if [ -d "${pathfs}/Bootrom" ]; then
 			mount --bind /mnt "${pathfs}/Bootrom"
+			
+		else
+			echo "Bootrom directory not found"
 		fi
 	else
 		echo "Bootrom directory won't be disabled"
