@@ -273,9 +273,28 @@ get_partun()
 # ======== MISTER CORE FUNCTIONS ========
 loop_core()
 {
+	# Remove break trigger file
+	#rm -f /tmp/Attract_Break &>/dev/null
+	# Kill any leftover break monitoring
+	killall -q "cat /dev/input/mice" &
+	# Log any mouse activity
+	cat /dev/input/mice > /tmp/Attract_Break &
+	
 	while :; do
+		counter=${timer}
 		next_core
-		sleep ${timer}
+		while [ ${counter} -gt 0 ]; do
+			sleep 1
+			((counter--))
+			if [ -s /tmp/Attract_Break ]; then
+				echo "Mouse activity detected!"
+				# Remove break trigger file
+				rm -f /tmp/Attract_Break &>/dev/null
+				# Kill any leftover break monitoring
+				killall -q "cat /dev/input/mice" &
+				exit
+			fi
+		done
 	done
 }
 
@@ -414,4 +433,4 @@ init_data										# Setup data arrays
 parse_cmdline ${@}					# Parse command line parameters for input
 there_can_be_only_one "$$" "${0}"	# Terminate any other running Attract Mode processes
 loop_core										# Let Mortal Kombat begin!
-exit 1											# We should never exit here, so if we do something is wrong
+exit
