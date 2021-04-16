@@ -279,6 +279,8 @@ loop_core()
 	killall -q "cat /dev/input/mice" &
 	# Log any mouse activity
 	cat /dev/input/mice > /tmp/Attract_Break &
+	# Log any joystick activity
+	jstest --event /dev/hidraw0 | grep -v "value 3" >  /tmp/Attract_Break &
 	
 	while :; do
 		counter=${timer}
@@ -287,7 +289,7 @@ loop_core()
 			sleep 1
 			((counter--))
 			if [ -s /tmp/Attract_Break ]; then
-				echo "Mouse activity detected!"
+				echo "Joystick/Mouse activity detected!"
 				# Remove break trigger file
 				rm -f /tmp/Attract_Break &>/dev/null
 				# Kill any leftover break monitoring
