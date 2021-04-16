@@ -47,6 +47,10 @@ orientation=All
 ignorezip="No"
 disable_bootrom="Yes"
 
+# ======== INTERNAL VARIABLES ========
+declare -i coreretries=3
+declare -i romloadfails=0
+
 # ======== CORE CONFIG DATA ========
 init_data()
 {
@@ -273,6 +277,7 @@ get_partun()
 # ======== MISTER CORE FUNCTIONS ========
 loop_core()
 {
+
 	# Remove break trigger file
 	#rm -f /tmp/Attract_Break &>/dev/null
 	# Kill any leftover break monitoring
@@ -281,7 +286,7 @@ loop_core()
 	cat /dev/input/mice > /tmp/Attract_Break &
 	# Log any joystick activity
 	jstest --event /dev/hidraw0 | grep -v "value 3" >  /tmp/Attract_Break &
-	
+
 	while :; do
 		counter=${timer}
 		next_core
@@ -300,17 +305,26 @@ loop_core()
 	done
 }
 
-next_core()
+next_core() # next_core (nextcore)
 {
-	declare -g nextcore=$(echo ${corelist}| xargs shuf -n1 -e)
-	
+	if [ -z "${corelist[@]//[[:blank:]]/}" ]; then
+		echo "ERROR: FATAL - List of cores is now empty. Nothing to do!"
+		exit 1
+	fi
+
+	if [ -z "${1}" ]; then
+		declare -g nextcore=$(echo ${corelist}| xargs shuf -n1 -e)
+	else
+		declare -g nextcore=${1}
+	fi
+
 	if [ "${nextcore,,}" == "arcade" ]; then
 		load_core_arcade
 		return
 	elif [ "${CORE_ZIPPED[${nextcore,,}],,}" == "yes" ]; then
 		# If not ZIP in game directory OR if ignoring ZIP
 		if [ -z "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then
-			corerom="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -name *Other* -name *VGM* -name *NES2PCE* -name *FDS* -name *SPC* -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
+			corerom="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -o -name *Other* -o -name *VGM* -o -name *NES2PCE* -o -name *FDS* -o -name *SPC* -o -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
 		else # Use ZIP
 			declare -g coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
 			corerom="/tmp/Extracted.${CORE_EXT[${nextcore,,}]}"
@@ -351,8 +365,19 @@ load_core() 	# load_core /path/to/rom name_of_rom (countdown)
 
 core_error() # core_error /path/to/ROM
 {
-	echo "Something went wrong! No valid game found for core ${nextcore} - rom ${1}."
-	return 1
+	if [ ${romloadfails} -lt ${coreretries} ]; then
+		declare -g romloadfails=$((romloadfails+1))
+		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${nextcore} rom: ${1}"
+		echo "Trying to find another rom..."
+		next_core ${nextcore}
+	else
+		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${nextcore} rom: ${1}"
+		echo "ERROR: Core ${nextcore} is blacklisted!"
+		declare -g corelist=("${corelist[@]/${nextcore}}")
+		echo "List of cores is now: ${corelist[@]}"
+		declare -g romloadfails=0
+		next_core
+	fi	
 }
 
 disable_bootrom()
@@ -368,6 +393,7 @@ disable_bootrom()
 		echo "Bootrom directory won't be disabled"
 	fi
 }
+
 
 # ======== LUCKY FUNCTION ========
 get_lucky()
@@ -449,5 +475,6 @@ build_mralist								# Generate list of MRAs
 init_data										# Setup data arrays
 parse_cmdline ${@}					# Parse command line parameters for input
 there_can_be_only_one "$$" "${0}"	# Terminate any other running Attract Mode processes
+echo "Let Mortal Kombat begin!"
 loop_core										# Let Mortal Kombat begin!
 exit
