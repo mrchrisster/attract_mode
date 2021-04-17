@@ -308,7 +308,7 @@ loop_core()
 next_core() # next_core (nextcore)
 {
 	if [ -z "${corelist[@]//[[:blank:]]/}" ]; then
-		echo "ERROR: FATAL - List of cores is now empty. Nothing to do!"
+		echo "ERROR: FATAL - List of cores is empty. Nothing to do!"
 		exit 1
 	fi
 
@@ -326,7 +326,7 @@ next_core() # next_core (nextcore)
 		if [ -z "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then
 			corerom="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -o -name *Eu* -o -name *Other* -o -name *VGM* -o -name *NES2PCE* -o -name *FDS* -o -name *SPC* -o -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
 		else # Use ZIP
-			declare -g coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
+			coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
 			corerom="/tmp/Extracted.${CORE_EXT[${nextcore,,}]}"
 		fi
 	else
