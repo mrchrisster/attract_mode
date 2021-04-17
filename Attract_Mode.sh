@@ -390,13 +390,15 @@ disable_bootrom()
 			echo "Bootrom directory not found"
 		fi
 		if [ -f "${pathfs}/Games/NES/boot0.rom" ]; then
-			mount --bind /bin/brfake ${pathfs}/Games/NES/boot0.rom
+			touch /tmp/brfake
+			mount --bind /tmp/brfake ${pathfs}/Games/NES/boot0.rom
 			
 		else
 			echo "NES Bootrom not found"
 		fi
 		if [ -f "${pathfs}/Games/NES/boot1.rom" ]; then
-			mount --bind /bin/brfake ${pathfs}/Games/NES/boot1.rom
+			touch /tmp/brfake
+			mount --bind /tmp/brfake ${pathfs}/Games/NES/boot1.rom
 			
 		else
 			echo "NES Bootrom not found"
