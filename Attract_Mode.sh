@@ -251,7 +251,7 @@ get_mbc()
 		REPOSITORY_URL="https://github.com/mrchrisster/MiSTer_Batch_Control"
 		echo ""
 		echo "Downloading mbc - a tool needed for launching roms"
-		echo "Created for MiSTer by Pocomane"
+		echo "Created for MiSTer by pocomane"
 		echo "${REPOSITORY_URL}"
 		curl_download "${mbcpath}" "${REPOSITORY_URL}/blob/master/mbc_v02?raw=true"
 	else
@@ -388,6 +388,18 @@ disable_bootrom()
 			
 		else
 			echo "Bootrom directory not found"
+		fi
+		if [ -f "${pathfs}/Games/NES/boot0.rom" ]; then
+			mount --bind /bin/brfake ${pathfs}/Games/NES/boot0.rom
+			
+		else
+			echo "NES Bootrom not found"
+		fi
+		if [ -f "${pathfs}/Games/NES/boot1.rom" ]; then
+			mount --bind /bin/brfake ${pathfs}/Games/NES/boot1.rom
+			
+		else
+			echo "NES Bootrom not found"
 		fi
 	else
 		echo "Bootrom directory won't be disabled"
