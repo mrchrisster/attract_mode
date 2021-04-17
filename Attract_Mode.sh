@@ -285,7 +285,7 @@ loop_core()
 	# Log any mouse activity
 	cat /dev/input/mice > /tmp/Attract_Break &
 	# Log any joystick activity
-	jstest --event /dev/hidraw0 | grep -v "value 3" >  /tmp/Attract_Break &
+	# jstest --event /dev/hidraw0 | grep -v "value 3" >  /tmp/Attract_Break &
 
 	while :; do
 		counter=${timer}
