@@ -1,3 +1,6 @@
+![alt text](https://i.ibb.co/DzjQDtH/Screenshot-22.png)
+
+
 
 # MiSTer Attract Mode
 **Enjoy the wonderful pixel art and sounds from the games in your MiSTer library - automatically!**
