@@ -277,7 +277,6 @@ get_partun()
 # ======== MISTER CORE FUNCTIONS ========
 loop_core()
 {
-
 	# Remove break trigger file
 	#rm -f /tmp/Attract_Break &>/dev/null
 	# Kill any leftover break monitoring
@@ -313,9 +312,9 @@ next_core() # next_core (nextcore)
 	fi
 
 	if [ -z "${1}" ]; then
-		declare -g nextcore=$(echo ${corelist}| xargs shuf -n1 -e)
+		nextcore="$(echo ${corelist}| xargs shuf -n1 -e)"
 	else
-		declare -g nextcore=${1}
+		nextcore="${1}"
 	fi
 
 	if [ "${nextcore,,}" == "arcade" ]; then
@@ -324,35 +323,34 @@ next_core() # next_core (nextcore)
 	elif [ "${CORE_ZIPPED[${nextcore,,}],,}" == "yes" ]; then
 		# If not ZIP in game directory OR if ignoring ZIP
 		if [ -z "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \))" ] || [ "${ignorezip,,}" == "yes" ]; then
-			corerom="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -o -name *Eu* -o -name *Other* -o -name *VGM* -o -name *NES2PCE* -o -name *FDS* -o -name *SPC* -o -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
+			rompath="$(find ${CORE_PATH[${nextcore,,}]} -type d \( -name *BIOS* -o -name *Eu* -o -name *Other* -o -name *VGM* -o -name *NES2PCE* -o -name *FDS* -o -name *SPC* -o -name Unsupported \) -prune -false -o -name *.${CORE_EXT[${nextcore,,}]} | shuf -n 1)"
+			romname=$(basename "${rompath}")
 		else # Use ZIP
-			coresh=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
-			corerom="/tmp/Extracted.${CORE_EXT[${nextcore,,}]}"
+			romname=$("${partunpath}" "$(find ${CORE_PATH[${nextcore,,}]} -maxdepth 1 -type f \( -iname "*.zip" \) | shuf -n 1)" -i -r -f ${CORE_EXT[${nextcore,,}]} --rename /tmp/Extracted.${CORE_EXT[${nextcore,,}]})
+			# Partun returns the actual rom name to us so we need a special case here
+			romname=$(basename "${romname}")
+			rompath="/tmp/Extracted.${CORE_EXT[${nextcore,,}]}"
 		fi
 	else
-		corerom="$(find ${CORE_PATH[${nextcore,,}]} -type f \( -iname *.${CORE_EXT[${nextcore,,}]} \) | shuf -n 1)"
+		rompath="$(find ${CORE_PATH[${nextcore,,}]} -type f \( -iname *.${CORE_EXT[${nextcore,,}]} \) | shuf -n 1)"
+		romname=$(basename "${rompath}")
 	fi
 
-	if [ -z "${corerom}" ]; then
-		core_error "${corerom}"
+	if [ -z "${rompath}" ]; then
+		core_error "${nextcore}" "${rompath}"
 	else
-		if [ -z "${coresh}" ]; then
-			load_core "${corerom}" "$(echo $(basename "${corerom}") | sed -e 's/\.[^.]*$//')" "${1}"
-		else
-			load_core "${corerom}" "$(echo $(basename "${coresh}") | sed -e 's/\.[^.]*$//')" "${1}"
-		fi
+		load_core "${nextcore}" "${rompath}" "${romname%.*}" "${1}"
 	fi
 }
 
-load_core() 	# load_core /path/to/rom name_of_rom (countdown)
+load_core() 	# load_core core /path/to/rom name_of_rom (countdown)
 {	
-	echo ""
 	echo -n "Next up on the "
-	echo -ne "\e[4m${CORE_PRETTY[${nextcore,,}]}\e[0m: "
-	echo -e "\e[1m${2}\e[0m"
-	echo "${2} (${nextcore})" > /tmp/Attract_Game.txt
+	echo -ne "\e[4m${CORE_PRETTY[${1,,}]}\e[0m: "
+	echo -e "\e[1m${3}\e[0m"
+	echo "${3} (${1})" > /tmp/Attract_Game.txt
 
-	if [ "${2}" == "countdown" ]; then
+	if [ "${4}" == "countdown" ]; then
 		echo "Loading in..."
 		for i in {5..1}; do
 			echo "${i} seconds"
@@ -360,20 +358,20 @@ load_core() 	# load_core /path/to/rom name_of_rom (countdown)
 		done
 	fi
 
-	"${mbcpath}" load_rom ${nextcore^^} "${1}" > /dev/null 2>&1
+	"${mbcpath}" load_rom ${1^^} "${2}" > /dev/null 2>&1
 }
 
-core_error() # core_error /path/to/ROM
+core_error() # core_error core /path/to/ROM
 {
 	if [ ${romloadfails} -lt ${coreretries} ]; then
 		declare -g romloadfails=$((romloadfails+1))
-		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${nextcore} rom: ${1}"
+		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${1} rom: ${2}"
 		echo "Trying to find another rom..."
-		next_core ${nextcore}
+		next_core ${1}
 	else
-		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${nextcore} rom: ${1}"
-		echo "ERROR: Core ${nextcore} is blacklisted!"
-		declare -g corelist=("${corelist[@]/${nextcore}}")
+		echo "ERROR: Failed ${romloadfails} times. No valid game found for core: ${1} rom: ${2}"
+		echo "ERROR: Core ${1} is blacklisted!"
+		declare -g corelist=("${corelist[@]/${1}}")
 		echo "List of cores is now: ${corelist[@]}"
 		declare -g romloadfails=0
 		next_core
