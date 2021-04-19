@@ -6,7 +6,7 @@ mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 #Create Startup Script
 
 cat <<\EOF > /etc/init.d/_S93attractauto
-#!/bin/sh
+#!/bin/bash
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/media/fat/linux:/media/fat/Scripts:.
 trap "" HUP
 trap "" TERM
@@ -55,10 +55,10 @@ done
 		echo "No Joystick connected"
 fi
 echo $!>/var/run/attractauto.pid
-sleep 10 && touch /tmp/Attract_Break
-sleep 15
+sleep 30 && touch /tmp/Attract_Break
+sleep 30
 while true; do
- [ "$(/bin/find /tmp/Attract_Break -mmin +2)" ] && /media/fat/Scripts/Attract_Mode.sh
+ [ "$(/bin/find /tmp/Attract_Break -mmin +10)" ] && /media/fat/Scripts/Attract_Mode.sh
  sleep 3
 done
 }
@@ -106,3 +106,4 @@ echo ""
 echo "Launching in 5s"
 sleep 5 && reboot -f
 exit 0
+
