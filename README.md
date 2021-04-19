@@ -9,8 +9,10 @@
 Attract Mode is a script which starts a random game on the MiSTer FPGA. The script is highly customizable through the included ini file (details below). Games can be played in Attract Mode, but the next game loads automatically after 2 minutes *unless you wiggle the mouse!* If you don't have a mouse connected to your MiSTer you'll need to ***cold reboot*** your MiSTer from the OSD (F12) menu, or use the power button.
 
 ## Installation
-If your MiSTer is connected to the internet, the installation is straight forward, just copy `Attract_Mode.sh` and `Attract_Mode.ini` to `/media/fat/Scripts` Directory, *that's it.*   
-`Attract_Mode.ini` is optional, but highly recommended if you want to customize behavior.
+If your MiSTer is connected to the internet, the installation is straight forward:  
+- Copy `Attract_Mode.sh` and `Attract_Mode.ini` to `/media/fat/Scripts` Directory, *that's it.*  
+You will need no other files from here to get everything working.  
+  
 
 ## Offline Installation  
 If your MiSTer is not connected to the internet, you can install the two additional tools needed for correct operation of Attract Mode.  
