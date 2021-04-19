@@ -13,7 +13,9 @@ Installation is straight forward, just copy `Attract_Mode.sh` and `Attract_Mode.
 `Attract_Mode.ini` is optional, but highly recommended if you want to customize behavior.
 
 ### Offline Installation  
-If your MiSTer is not connected to the internet, you can install `mbc` and `partun` from the subfolder `Tools` by dropping them in `/media/fat/linux` directory.  
+If your MiSTer is not connected to the internet, you can install the two additional tools needed for correct operation of Attract Mode.  
+Go to the subfolder `Tools` on this Github page and download `mbc` and `partun`  
+Connect to your MiSTer's SD card and drop the two files into the `/media/fat/linux` directory.  
 Now open Attract_Mode.sh and find the following lines
   
 ```
