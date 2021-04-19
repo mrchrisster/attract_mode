@@ -24,7 +24,7 @@
 # Thanks for the contributions and support:
 # pocomane, kaloun34, RetroDriven, woelper, LamerDeluxe
 
-
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/media/fat/linux:/media/fat/Scripts:.
 # ======== DEFAULT VARIABLES ========
 # Change these in the INI file
 corelist="Arcade,GBA,Genesis,MegaCD,NeoGeo,NES,SNES,TGFX16,TGFX16CD"
@@ -45,7 +45,8 @@ orientation=All
 
 # ======== CONSOLE OPTIONS ========
 ignorezip="No"
-disable_bootrom="Yes"
+disablebootrom="Yes"
+attractquit="Yes"
 
 # ======== INTERNAL VARIABLES ========
 declare -i coreretries=3
@@ -275,16 +276,22 @@ get_partun()
 
 
 # ======== MISTER CORE FUNCTIONS ========
-loop_core()
+attract_quit()
 {
+if [ "${attractquit}" == "Yes" ]; then
 	# Remove break trigger file
-	#rm -f /tmp/Attract_Break &>/dev/null
+	# rm -f /tmp/Attract_Break &>/dev/null
 	# Kill any leftover break monitoring
 	killall -q "cat /dev/input/mice" &
 	# Log any mouse activity
 	cat /dev/input/mice > /tmp/Attract_Break &
-	# Log any joystick activity
-	# jstest --event /dev/hidraw0 | grep -v "value 3" >  /tmp/Attract_Break &
+
+fi
+}
+
+
+loop_core()
+{
 
 	while :; do
 		counter=${timer}
@@ -295,9 +302,10 @@ loop_core()
 			if [ -s /tmp/Attract_Break ]; then
 				echo "Joystick/Mouse activity detected!"
 				# Remove break trigger file
-				rm -f /tmp/Attract_Break &>/dev/null
+				#rm -f /tmp/Attract_Break &>/dev/null
 				# Kill any leftover break monitoring
-				killall -q "cat /dev/input/mice" &
+				#killall -q python &
+				#killall -q "cat /dev/input/mice" &
 				exit
 			fi
 		done
@@ -380,7 +388,7 @@ core_error() # core_error core /path/to/ROM
 
 disable_bootrom()
 {
-	if [ "${disable_bootrom}" == "Yes" ]; then
+	if [ "${disablebootrom}" == "Yes" ]; then
 		if [ -d "${pathfs}/Bootrom" ]; then
 			mount --bind /mnt "${pathfs}/Bootrom"
 			
@@ -480,6 +488,7 @@ load_core_arcade()
 echo "Starting up, please wait a minute..."
 parse_ini									# Overwrite default values from INI
 disable_bootrom									# Disable Bootrom until Reboot 
+attract_quit
 curl_check									# Check network environment, configure curl
 get_partun									# Download ZIP tool
 get_mbc											# Download MiSTer control tool
