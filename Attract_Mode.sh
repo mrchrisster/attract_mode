@@ -280,11 +280,11 @@ attract_quit()
 {
 if [ "${attractquit}" == "Yes" ]; then
 	# Remove break trigger file
-	# rm -f /tmp/Attract_Break &>/dev/null
+	# rm -f /tmp/.Attract_Break &>/dev/null
 	# Kill any leftover break monitoring
 	killall -q "cat /dev/input/mice" &
 	# Log any mouse activity
-	cat /dev/input/mice > /tmp/Attract_Break &
+	cat /dev/input/mice > /tmp/.Attract_Break &
 
 fi
 }
@@ -299,10 +299,10 @@ loop_core()
 		while [ ${counter} -gt 0 ]; do
 			sleep 1
 			((counter--))
-			if [ -s /tmp/Attract_Break ]; then
+			if [ -s /tmp/.Attract_Break ]; then
 				echo "Joystick/Mouse activity detected!"
 				# Remove break trigger file
-				#rm -f /tmp/Attract_Break &>/dev/null
+				#rm -f /tmp/.Attract_Break &>/dev/null
 				# Kill any leftover break monitoring
 				#killall -q python &
 				#killall -q "cat /dev/input/mice" &
