@@ -1,4 +1,10 @@
 #!/bin/bash
+pathfs=/media/fat
+basepath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+	if [ -f ${basepath}/Attract_Mode.ini ]; then
+		. ${basepath}/Attract_Mode.ini
+		IFS=$'\n'
+	fi
 
 mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 [ "$RO_ROOT" == "true" ] && mount / -o remount,rw
@@ -7,7 +13,6 @@ mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 
 cat <<\EOF > /etc/init.d/_S93attractauto
 #!/bin/bash
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/media/fat/linux:/media/fat/Scripts:.
 trap "" HUP
 trap "" TERM
 start() 
@@ -17,48 +22,30 @@ printf "Starting Attract Mode Auto"
 # Check if at least one Gamepad is connected
 if [ ! -f /dev/input/js0 ]; then
 {
-cat <<\END > /tmp/joysniff.py
-#!/usr/bin/env python
+cat <<\END > /tmp/joysniff.sh
+#!/bin/bash
+while true; do
+	if [[ $(xxd -l 128 -c 8 ${1} | awk '{ print $4 }' |grep 0100) == "0100" ]]; then
+		echo "Button pushed" > /tmp/.Attract_Break
+	fi
+	sleep 0.2 
+done
 
-import struct
-import time
-import glob
-import sys
-
-packstring = "iiii"
-
-infile_path = sys.argv[1]
-EVENT_SIZE = struct.calcsize(packstring)
-while True:
-    try:
-        file = open(infile_path, "rb")
-        event = file.read(EVENT_SIZE)
-        (x, button_a, y, button_b) = struct.unpack(packstring, event)
-        button_a = button_a %10
-        button_b = button_b %10
-        if button_a != 4 or button_b != 0:
-            f = open("/tmp/Attract_Break", "w")
-            f.write("Now the file has more content!")
-            f.close()
-        time.sleep(0.2)
-    except FileNotFoundError:
-        print("Joystick disconnected")
-        sys.exit(1)
 END
 sync
-chmod +x /tmp/joysniff.py
+chmod +x /tmp/joysniff.sh
 for f in /dev/input/js*; do
-/tmp/joysniff.py "$f" &
+/tmp/joysniff.sh "$f" &
 done
 }
 	else
 		echo "No Joystick connected"
 fi
 echo $!>/var/run/attractauto.pid
-sleep 30 && touch /tmp/Attract_Break
+sleep 30 && touch /tmp/.Attract_Break
 sleep 30
 while true; do
- [ "$(/bin/find /tmp/Attract_Break -mmin +5)" ] && /media/fat/Scripts/Attract_Mode.sh
+ [ "$(/bin/find /tmp/.Attract_Break -mmin +3)" ] && /media/fat/Scripts/Attract_Mode.sh
  sleep 3
 done
 }
@@ -103,7 +90,7 @@ echo ""
 echo "Attract Mode Auto starts"
 echo "after 2 minutes of inactivity"
 echo ""
-echo "Launching in 5s"
-sleep 5 && reboot -f
-exit 0
+/etc/init.d/S93attractauto start
+echo "Done"
 
+exit 0
