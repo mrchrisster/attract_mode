@@ -45,7 +45,7 @@ echo $!>/var/run/attractauto.pid
 sleep 30 && touch /tmp/.Attract_Break
 sleep 30
 while true; do
- [ "$(/bin/find /tmp/.Attract_Break -mmin +3)" ] && /media/fat/Scripts/Attract_Mode.sh
+ [ "$(/bin/find /tmp/.Attract_Break -mmin +3)" ] && ${pathfs}/Scripts/Attract_Mode.sh
  sleep 3
 done
 }
