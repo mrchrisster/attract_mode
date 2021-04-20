@@ -1,5 +1,4 @@
 #!/bin/bash
-pathfs=/media/fat
 basepath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 	if [ -f ${basepath}/Attract_Mode.ini ]; then
 		. ${basepath}/Attract_Mode.ini
@@ -17,35 +16,82 @@ trap "" HUP
 trap "" TERM
 start() 
 {
+if [ -f /var/run/attractauto.pid ]; then
+	echo "Attract Mode Auto already running"
+	exit 1
+fi
 
-printf "Starting Attract Mode Auto"
-# Check if at least one Gamepad is connected
-if [ ! -f /dev/input/js0 ]; then
-{
-cat <<\END > /tmp/joysniff.sh
+echo $$>/var/run/attractauto.pid
+
+echo "Started Attract Mode Auto"
+
+# Kill old activity processes
+killall -q -9 .SAM_Joy.sh &>/dev/null
+killall -q -9 .SAM_Mouse.sh &>/dev/null
+killall -q -9 .SAM_Keyboard.sh &>/dev/null
+
+# Joystick activity detection script creation
+cat <<\END > /tmp/.SAM_Joy.sh
 #!/bin/bash
 while true; do
-	if [[ $(xxd -l 128 -c 8 ${1} | awk '{ print $4 }' |grep 0100) == "0100" ]]; then
-		echo "Button pushed" > /tmp/.Attract_Break
+	if [[ $(xxd -l 128 -c 8 ${1} | awk '{ print $4 }' | grep 0100) == "0100" ]]; then
+		echo "Button pushed" >| /tmp/.SAM_Joy_Activity
 	fi
 	sleep 0.2 
 done
 
 END
+
+# Keyboard activity detection script creation
+cat <<\END > /tmp/.SAM_Keyboard.sh
+#!/bin/bash
+cat /dev/${1} >| /tmp/.SAM_Keyboard_Activity
+
+END
+
+# Mouse activity detection script creation
+cat <<\END > /tmp/.SAM_Mouse.sh
+#!/bin/bash
+cat /dev/input/mice >| /tmp/.SAM_Mouse_Activity
+
+END
+
 sync
-chmod +x /tmp/joysniff.sh
-for f in /dev/input/js*; do
-/tmp/joysniff.sh "$f" &
+
+# Set execute flag
+chmod +x /tmp/.SAM_Joy.sh
+chmod +x /tmp/.SAM_Mouse.sh
+chmod +x /tmp/.SAM_Keyboard.sh
+
+# Spawn Joystick monitoring processes
+rm -f /tmp/.SAM_Joy_Activity
+touch /tmp/.SAM_Joy_Activity
+for joystick in /dev/input/js*; do
+	/tmp/.SAM_Joy.sh "${joystick}" 2>/dev/null &
 done
-}
-	else
-		echo "No Joystick connected"
+
+# Spawn Mouse monitoring process
+/tmp/.SAM_Mouse.sh 2>/dev/null &
+
+# Spawn Keyboard monitoring process
+for keyboard in $(dmesg --decode --level info --kernel --color=never --notime --nopager | grep -e 'Keyboard' | grep -Eo 'hidraw[0-9]+'); do
+	/tmp/.SAM_Keyboard.sh "${keyboard}" 2>/dev/null &
+done
+
+# Wait for system to fully startup
+sleep 60
+
+# Try to find script in the path, use default otherwise
+SAMpath=$(which Attract_Mode.sh)
+if [ ! -f $(which Attract_Mode.sh) ]; then
+	SAMpath="/media/fat/Scripts/Attract_Mode.sh"
 fi
-echo $!>/var/run/attractauto.pid
-sleep 30 && touch /tmp/.Attract_Break
-sleep 30
+	
+# Check if we're idle - start Attract Mode if we are
 while true; do
- [ "$(/bin/find /tmp/.Attract_Break -mmin +5)" ] && /media/fat/Scripts/Attract_Mode.sh
+ [ "$(/bin/find /tmp/.SAM_Joy_Activity -mmin +5)" ] && ${SAMpath}
+ [ "$(/bin/find /tmp/.SAM_Mouse_Activity -mmin +5)" ] && ${SAMpath}
+ [ "$(/bin/find /tmp/.SAM_Keyboard_Activity -mmin +5)" ] && ${SAMpath}
  sleep 3
 done
 }
@@ -53,8 +99,16 @@ done
 stop() 
 {
         printf "Stopping Attract Mode Auto"
-        kill -9 `attractauto.pid`
-        rm /var/run/attractauto.pid
+        # Kill old activity processes
+				killall -q -9 .SAM_Joy.sh &>/dev/null
+				killall -q -9 .SAM_Mouse.sh &>/dev/null
+				killall -q -9 .SAM_Keyboard.sh &>/dev/null
+				
+				# Kill running process
+        if [ -f /var/run/attractauto.pid ]; then
+        	kill -9 $(cat /var/run/attractauto.pid)
+	        rm -f /var/run/attractauto.pid
+        fi
         echo "OK"
 }
 case "$1" in
@@ -82,15 +136,8 @@ chmod +x /etc/init.d/S93attractauto
 sync
 [ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 sync
-#/etc/init.d/S93attractauto start
 
-echo "Attract Mode Auto is on and"
-echo "will restart now."
-echo ""
-echo "Attract Mode Auto starts"
-echo "after 2 minutes of inactivity"
-echo ""
-/etc/init.d/S93attractauto start
-echo "Done"
+/etc/init.d/S93attractauto start &
+echo "Attract Mode Auto is now on!"
 
 exit 0
