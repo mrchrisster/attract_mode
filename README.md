@@ -1,7 +1,20 @@
+  
+  
+  
+  
+  
+  
+  
+  
 **Please go to https://github.com/mrchrisster/MiSTer_SAM for the newest version with Autostart functionality**
-
-
-
+  
+   
+  
+  
+  
+  
+  
+  
 # MiSTer Attract Mode
 **Enjoy the wonderful pixel art and sounds from the games in your MiSTer library - automatically!**
 
