@@ -276,36 +276,24 @@ get_partun()
 
 
 # ======== MISTER CORE FUNCTIONS ========
-attract_quit()
-{
-if [ "${attractquit}" == "Yes" ]; then
-	# Remove break trigger file
-	# rm -f /tmp/.Attract_Break &>/dev/null
-	# Kill any leftover break monitoring
-	killall -q "cat /dev/input/mice" &
-	# Log any mouse activity
-	cat /dev/input/mice > /tmp/.Attract_Break &
-
-fi
-}
-
-
 loop_core()
 {
-
 	while :; do
 		counter=${timer}
 		next_core
 		while [ ${counter} -gt 0 ]; do
 			sleep 1
 			((counter--))
-			if [ -s /tmp/.Attract_Break ]; then
-				echo "Joystick/Mouse activity detected!"
-				# Remove break trigger file
-				#rm -f /tmp/.Attract_Break &>/dev/null
-				# Kill any leftover break monitoring
-				#killall -q python &
-				#killall -q "cat /dev/input/mice" &
+			if [ -s /tmp/.SAM_Joy_Activity ]; then
+				echo "Controller activity detected!"
+				exit
+			fi
+			if [ -s /tmp/.SAM_Keyboard_Activity ]; then
+				echo "Keyboard activity detected!"
+				exit
+			fi
+			if [ -s /tmp/.SAM_Mouse_Activity ]; then
+				echo "Mouse activity detected!"
 				exit
 			fi
 		done
@@ -391,26 +379,15 @@ disable_bootrom()
 	if [ "${disablebootrom}" == "Yes" ]; then
 		if [ -d "${pathfs}/Bootrom" ]; then
 			mount --bind /mnt "${pathfs}/Bootrom"
-			
-		else
-			echo "Bootrom directory not found"
 		fi
 		if [ -f "${pathfs}/Games/NES/boot0.rom" ]; then
 			touch /tmp/brfake
 			mount --bind /tmp/brfake ${pathfs}/Games/NES/boot0.rom
-			
-		else
-			echo "NES Bootrom not found"
 		fi
 		if [ -f "${pathfs}/Games/NES/boot1.rom" ]; then
 			touch /tmp/brfake
 			mount --bind /tmp/brfake ${pathfs}/Games/NES/boot1.rom
-			
-		else
-			echo "NES Bootrom not found"
 		fi
-	else
-		echo "Bootrom directory won't be disabled"
 	fi
 }
 
@@ -488,7 +465,6 @@ load_core_arcade()
 echo "Starting up, please wait a minute..."
 parse_ini									# Overwrite default values from INI
 disable_bootrom									# Disable Bootrom until Reboot 
-attract_quit
 curl_check									# Check network environment, configure curl
 get_partun									# Download ZIP tool
 get_mbc											# Download MiSTer control tool
