@@ -1,4 +1,4 @@
-![alt text](https://i.ibb.co/DzjQDtH/Screenshot-22.png)
+**Please go to https://github.com/mrchrisster/MiSTer_SAM for the newest version with Autostart functionality**
 
 
 
